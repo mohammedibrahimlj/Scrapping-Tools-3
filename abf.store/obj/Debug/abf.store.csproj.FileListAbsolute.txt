@@ -1,0 +1,9 @@
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\abf.store.exe.config
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\abf.store.exe
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\abf.store.pdb
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\HtmlAgilityPack.dll
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\HTMLCodeReplacer.dll
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\HtmlAgilityPack.xml
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\obj\Debug\abf.store.exe
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\obj\Debug\abf.store.pdb

@@ -1,0 +1,12 @@
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\Arrow.com.exe.config
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\Arrow.com.exe
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\Arrow.com.pdb
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\HtmlAgilityPack.dll
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\HTMLCodeReplacer.dll
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\Newtonsoft.Json.dll
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\HtmlAgilityPack.xml
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\bin\Debug\Newtonsoft.Json.xml
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\obj\Debug\Arrow.com.exe
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\obj\Debug\Arrow.com.pdb
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\Arrow.com\obj\Debug\Arrow.com.csprojResolveAssemblyReference.cache

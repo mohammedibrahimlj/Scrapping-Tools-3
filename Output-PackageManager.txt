@@ -1,0 +1,12 @@
+﻿Attempting to gather dependency information for package 'Newtonsoft.Json.12.0.3' with respect to project 'pumpcatalog', targeting '.NETFramework,Version=v4.5.2'
+Attempting to resolve dependencies for package 'Newtonsoft.Json.12.0.3' with DependencyBehavior 'Lowest'
+Resolving actions to install package 'Newtonsoft.Json.12.0.3'
+Resolved actions to install package 'Newtonsoft.Json.12.0.3'
+  GET https://api.nuget.org/v3-flatcontainer/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg
+  OK https://api.nuget.org/v3-flatcontainer/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg 15ms
+Installing Newtonsoft.Json 12.0.3.
+Adding package 'Newtonsoft.Json.12.0.3' to folder 'C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\packages'
+Added package 'Newtonsoft.Json.12.0.3' to folder 'C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\packages'
+Added package 'Newtonsoft.Json.12.0.3' to 'packages.config'
+Successfully installed 'Newtonsoft.Json 12.0.3' to pumpcatalog
+========== Finished ==========
