@@ -7,4 +7,3 @@ C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\bin\Debug\HtmlAgilityPack.xml
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\obj\Debug\abf.store.exe
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\obj\Debug\abf.store.pdb
-C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\abf.store\obj\Debug\abf.store.csprojResolveAssemblyReference.cache

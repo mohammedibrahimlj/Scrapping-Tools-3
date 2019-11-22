@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HTMLCodeReplacer;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace abf.store
@@ -23,13 +25,54 @@ namespace abf.store
         private static string SourceLink,searchparam= "?mx=50&p=xpgnox",Plink=string.Empty;
         static HtmlDocument h1, h2, h3, h4, h5, h6;
         private static bool InitilCount = false;
+        private static abfstore Dabfstore;
         private static readonly string Homeurl = "https://www.abf.store";
         static void Main(string[] args)
+        {
+
+
+            Console.Title = Name;
+            while (true)
+            {
+                DataSet data = GetData(2);
+                if (data != null)
+                {
+                    TotalProcessLink = data.Tables[0].Rows.Count;
+                    if (TotalProcessLink == 0)
+                        break;
+                    num = 1;
+                    foreach (DataRow row in data.Tables[0].Rows)
+                    {
+                        try
+                        {
+                            ppage = 1;
+                            TotalLink = 0;
+                            Plink = string.Empty;
+                            SourceLink = string.Empty;
+                            sourceid = 0;
+                            Console.WriteLine("Processing link " + num + " of " + TotalProcessLink);
+                            SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
+                            sourceid = int.Parse(row.ItemArray[0].ToString());
+                            DownloadString();
+                            GetProductData();
+                            num++;
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Completed...");
+            Console.ReadKey();
+ 
+        }
+        private static void InitialScrap()
         {
             Console.Title = Name;
             while (true)
             {
-                DataSet data = GetData(1);
+                DataSet data = GetData(2);
                 if (data != null)
                 {
                     TotalProcessLink = data.Tables[0].Rows.Count;
@@ -46,8 +89,8 @@ namespace abf.store
                             Console.WriteLine("Processing link " + num + " of " + TotalProcessLink);
                             SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
                             sourceid = int.Parse(row.ItemArray[0].ToString());
-                            TotalLink = string.IsNullOrEmpty(row.ItemArray[2].ToString())?1:int.Parse(row.ItemArray[2].ToString());
-                            ppage = row.ItemArray[3].ToString()=="0"?1:int.Parse(row.ItemArray[3].ToString());
+                            TotalLink = string.IsNullOrEmpty(row.ItemArray[2].ToString()) ? 1 : int.Parse(row.ItemArray[2].ToString());
+                            ppage = row.ItemArray[3].ToString() == "0" ? 1 : int.Parse(row.ItemArray[3].ToString());
 
                             Console.WriteLine("Processing page " + ppage);
                             Plink = SourceLink + searchparam.Replace("xpgnox", ppage.ToString());
@@ -91,7 +134,111 @@ namespace abf.store
                 Console.WriteLine("Error while processing the HTML");
             }
         }
+        private static void GetProductData()
+        {
+            try
+            {
+                Dabfstore = new abfstore();
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                try
+                {
+                    Dabfstore.Category = h1.DocumentNode.SelectSingleNode("//section[@class='border-bottom border-light-gray py2 px2 lg-px3 h5 semi-bold medium-gray']").InnerText.ToString().Trim().Replace("\n","").Replace("\r","");
+                    Dabfstore.Category = Regex.Replace(Dabfstore.Category, @"s", "");
+                }
+                catch { Dabfstore.Category = ""; }
+                try
+                {
 
+                    var ptd = h1.DocumentNode.SelectSingleNode("//div[@class='md-col-6 md-pr3 lg-pr4 pb4']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(ptd);
+                    try
+                    {
+                        Dabfstore.Title = h2.DocumentNode.SelectSingleNode("//h1[@class='bold m0']").InnerText.ToString();
+                    }
+                    catch { Dabfstore.Title = ""; }
+                    try
+                    {
+                        Dabfstore.ProductDesc = h2.DocumentNode.SelectSingleNode("//h4[@class='gray mt0 mb2']").InnerText.ToString();
+                    }
+                    catch { Dabfstore.ProductDesc = ""; }
+                }
+                catch { }
+                try
+                {
+                    Dabfstore.image_url = h1.DocumentNode.SelectNodes("//span[@class='block absolute top-0 right-0 bottom-0 left-0 z4 pointer lightbox']").Select(s => s.Attributes["href"].Value.ToString()).Aggregate((a, b) => a + " | " + b).ToString();
+                }
+                catch { Dabfstore.image_url = ""; }
+
+                try
+                {
+                    //flex border-top border-light-gray py1
+                    var specdata = h1.DocumentNode.SelectNodes("//li[@class='flex border-top border-light-gray py1']");
+                    foreach (var li in specdata)
+                    {
+                        h2 = null;
+                        h2 = new HtmlDocument();
+                        h2.LoadHtml(li.InnerHtml.ToString());
+                        var spandata = h2.DocumentNode.SelectNodes("//span");
+                        try
+                        {
+                            if (spandata[0].InnerText.Trim().ToString() == "Brand")
+                                Dabfstore.Manufacture = spandata[1].InnerText.Trim().ToString();
+                            else if (spandata[0].InnerText.Trim().ToString() == "Item Number")
+                                Dabfstore.PartNo = spandata[1].InnerText.Trim().ToString();
+                            else if (spandata[0].InnerText.Trim().ToString().Contains("MPN"))
+                                Dabfstore.MNP = spandata[1].InnerText.Trim().ToString();
+                            else
+                                Dabfstore.Spec += spandata[0].InnerText.Trim().ToString() + " : " + spandata[1].InnerText.Trim().ToString() + " | ";
+                        }
+                        catch { }
+
+                    }
+                }
+                catch { }
+            }
+            catch { }
+            finally {
+                InsertProduct();
+                Dabfstore = null;
+                h1 = null;
+                h2 = null;
+                h3 = null;
+            }
+        }
+        private static void InsertProduct()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+                        cmd.CommandText = "update tbl_abf_store_product set Category=@Category,Title=@Title,ProductDesc=@ProductDesc,Manufacture=@Manufacture,PartNo=@PartNo,MNP=@MNP,Spec=@Spec,image_url=@image_url where productid = @sourceid";
+                        cmd.Parameters.AddWithValue("@Category", Dabfstore.Category != null ? ReplaceString.PutString(Dabfstore.Category) : "");
+                        cmd.Parameters.AddWithValue("@Title", Dabfstore.Title != null ? ReplaceString.PutString(Dabfstore.Title) : "");
+                        cmd.Parameters.AddWithValue("@ProductDesc", Dabfstore.ProductDesc != null ? ReplaceString.PutString(Dabfstore.ProductDesc) : "");
+                        cmd.Parameters.AddWithValue("@Manufacture", Dabfstore.Manufacture != null ? ReplaceString.PutString(Dabfstore.Manufacture) : "");
+                        cmd.Parameters.AddWithValue("@PartNo", Dabfstore.PartNo != null ? ReplaceString.PutString(Dabfstore.PartNo) : "");
+                        cmd.Parameters.AddWithValue("@MNP", Dabfstore.MNP !=null ? ReplaceString.PutString(Dabfstore.MNP) : "");
+                        cmd.Parameters.AddWithValue("@Spec", Dabfstore.Spec != null ? ReplaceString.PutString(Dabfstore.Spec) : "");
+                        cmd.Parameters.AddWithValue("@image_url", Dabfstore.image_url != null ? ReplaceString.PutString(Dabfstore.image_url) : "");
+                        cmd.Parameters.AddWithValue("@sourceid", sourceid);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error While Updating the Product");
+            }
+        }
         private static void UpdateSearchLinkStatus()
         {
             try
@@ -140,7 +287,7 @@ namespace abf.store
             {
                 DownloadedString = string.Empty;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Plink);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SourceLink);
                 request.KeepAlive = true;
                 request.Headers.Add("Upgrade-Insecure-Requests", @"1");
                 request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36";
@@ -178,7 +325,7 @@ namespace abf.store
                             sqlCommand = new SqlCommand("select searchid,SearchLink,TotalLink,processingpage from tbl_abf_store_searchLink where Iscompleted=0 and searchid between " + start + " and " + end + " ", sqlConnection);
                             break;
                         case 2:
-                            sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_Arrow_Product where isnull(category,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
+                            sqlCommand = new SqlCommand("select productid,Producturl from tbl_abf_store_product where isnull(Category,'')='' and productid  between " + start + " and " + end + " ", sqlConnection);
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;
@@ -193,5 +340,17 @@ namespace abf.store
             }
             return dataSet;
         }
+    }
+    public class abfstore
+    {
+        public string Category { get; set; }
+        public string Title { get; set; }
+        public string ProductDesc { get; set; }
+        public string Manufacture { get; set; }
+        public string PartNo { get; set; }
+        public string MNP { get; set; }
+        public string desc { get; set; }
+        public string Spec { get; set; }
+        public string image_url { get; set; }
     }
 }
