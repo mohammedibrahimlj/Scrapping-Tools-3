@@ -11,6 +11,8 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Data.SqlClient;
+using HTMLCodeReplacer;
+using System.Data;
 
 namespace pumpcatalog
 {
@@ -29,10 +31,47 @@ namespace pumpcatalog
         private static List<string> Cookie;
         private static string cookiestr = "";
         private static bool LoopProcess = true;
-        private static readonly string Homeurl = "https://www.pumpcatalog.com";
+        private static readonly string Homeurl = "https://www.pumpcatalog.com",specat= "pro_tab_content table1 dib clearfix | pro_tab_content table2 clearfix";
+        private static PumpCatelog DPumpCatelog;
         static void Main(string[] args)
         {
-            for(int sl= 1; sl < 60; sl++)
+            Console.Title = Name;
+            while (true)
+            {
+                DataSet data = GetData(1);
+                if (data != null)
+                {
+                    TotalCount = data.Tables[0].Rows.Count;
+                    if (TotalCount == 0)
+                        break;
+
+                    num = 1;
+                    foreach (DataRow row in data.Tables[0].Rows)
+                    {
+                        try
+                        {
+                            SourceLink = string.Empty;
+                            sourceid = 0;
+                            Console.WriteLine("Processing link " + num + " of " + TotalCount);
+                            SourceLink = "https://www.pumpcatalog.com/berkeley/water-system-parts/001355/";
+                            SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
+                            sourceid = int.Parse(row.ItemArray[0].ToString());
+                            DownloadHTMLString();
+                            ProcessProductHTML();
+                            num++;
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Completed....");
+            Console.ReadKey();
+        }
+        private static void InitialProcess()
+        {
+            for (int sl = 1; sl < 60; sl++)
             {
                 try
                 {
@@ -47,7 +86,7 @@ namespace pumpcatalog
                         SourceLink = string.Empty;
                         Console.WriteLine("Processing page " + ppcount);
                         SourceLink = PLink.Replace("XpgnoX", ppcount.ToString()).Replace("XMnoX", sl.ToString());
-                        DownloadString();
+                        DownloadHTMLString();
                         ParseJson();
                         UpdateSearchLinkStatus();
                         ppcount += 1;
@@ -58,6 +97,193 @@ namespace pumpcatalog
                 {
                     Console.WriteLine("Error on initial process...");
                 }
+            }
+        }
+        private static void ProcessProductHTML()
+        {
+            try
+            {
+                DPumpCatelog = new PumpCatelog();
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                try
+                {
+                    var breadcrum = h1.DocumentNode.SelectSingleNode("//div[@class='breadcrumbs clearfix']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(breadcrum);
+                    DPumpCatelog.Category = h2.DocumentNode.SelectNodes("//li").Select(s => s.InnerText.ToString()).Aggregate((a, b) => a + " | " + b).ToString();
+                }
+                catch { DPumpCatelog.Category = ""; }
+                try
+                {
+                    var Ctitle = h1.DocumentNode.SelectSingleNode("//div[@class='product_features p60 fright clearfix']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(Ctitle);
+                    DPumpCatelog.Title = h2.DocumentNode.SelectSingleNode("//p").InnerText.ToString();
+                }
+                catch { DPumpCatelog.Title = ""; }
+
+                try
+                {
+                    var Cprice = h1.DocumentNode.SelectSingleNode("//div[@class='price_tag product-info clearfix']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(Cprice);
+                    DPumpCatelog.Price = h2.DocumentNode.SelectSingleNode("//h3").InnerText.ToString().Trim();
+                }
+                catch { DPumpCatelog.Price = ""; }
+                try
+                {
+                    var Cprice = h1.DocumentNode.SelectSingleNode("//div[@class='product_code clearfix']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(Cprice);
+                    var imodeltext = h2.DocumentNode.SelectSingleNode("//span").InnerText.ToString();
+                    var spmodeltest = imodeltext.Split('|');
+                    foreach (var spdata in spmodeltest)
+                    {
+                        if (spdata.Contains("Model"))
+                        {
+                            DPumpCatelog.PartNo = "#" + spdata.Replace("Model #:", "").Trim();
+                        }
+                        else
+                        {
+                            DPumpCatelog.MPN = "#" + spdata.Replace("Item:", "").Trim();
+                        }
+                    }
+
+                }
+                catch { }
+                try
+                {
+                    foreach (var tclass in specat.Split('|'))
+                    {
+
+                        var Cspec = h1.DocumentNode.SelectSingleNode("//table[@class='"+ tclass.ToString().Trim() + "']").InnerHtml.ToString();
+                        h2 = null;
+                        h2 = new HtmlDocument();
+                        h2.LoadHtml(Cspec);
+                        var spectr = h2.DocumentNode.SelectNodes("//tr");
+                        foreach (var tr in spectr)
+                        {
+                            h3 = null;
+                            h3 = new HtmlDocument();
+                            h3.LoadHtml(tr.InnerHtml.ToString());
+                            var tdlist = h3.DocumentNode.SelectNodes("//td");
+                            if (tdlist[0].InnerText.ToString() != "UPC")
+                            {
+                                DPumpCatelog.Specification += tdlist[0].InnerText.ToString().Trim() + " : " + tdlist[1].InnerText.ToString().Trim() + " | ";
+                            }
+                            else
+                            {
+                                DPumpCatelog.UPC = "#" + tdlist[1].InnerText.ToString().Trim().ToString();
+                            }
+
+                        }
+                    }
+                }
+                catch
+                {
+                }
+                try
+                {
+                    var Cspec = h1.DocumentNode.SelectSingleNode("//div[@class='product_features p60 fright clearfix']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(Cspec);
+                    DPumpCatelog.Manufacture = h2.DocumentNode.SelectSingleNode("//img").Attributes["alt"].Value.ToString();
+                }
+                catch { DPumpCatelog.Manufacture = ""; }
+                try
+                {
+                    var Cspec = h1.DocumentNode.SelectSingleNode("//div[@class='product-images-slide']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(Cspec);
+                    DPumpCatelog.Image_URL = h2.DocumentNode.SelectSingleNode("//img").Attributes["src"].Value.ToString();
+                }
+                catch { DPumpCatelog.Image_URL = ""; }
+
+                try
+                {
+                    var Cdesc = h1.DocumentNode.SelectSingleNode("//div[@class='resp-tabs-container overview-tab']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(Cdesc);
+                    DPumpCatelog.Description = h2.DocumentNode.SelectSingleNode("//p").InnerText.ToString();
+                }
+                catch { DPumpCatelog.Description = ""; }
+            }
+            catch { }
+            finally {
+                InsertProduct();
+                DPumpCatelog = null;
+                h1 = null;
+                h2 = null;
+                h3 = null;
+                DownloadedString = string.Empty;
+            }
+        }
+        public static DataSet GetData(int option = 1)
+        {
+            SqlCommand sqlCommand = new SqlCommand();
+            DataSet dataSet = new DataSet();
+
+            Console.WriteLine("Fetching data from database................");
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(connection))
+                {
+                    switch (option)
+                    {
+                        case 1:
+                            sqlCommand = new SqlCommand("select id,productlink from tbl_pumpcatalog_product where isnull(Category,'')='' and id  between " + start + " and " + end + " ", sqlConnection);
+                            break;
+                    }
+                    sqlCommand.CommandTimeout = 6000;
+                    SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+                    sqlDataAdapter.Fill(dataSet);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("Error While loading search data!!! \n" + ex.ToString());
+            }
+            return dataSet;
+        }
+        private static void InsertProduct()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+                        cmd.CommandText = "update tbl_pumpcatalog_product set Category=@Category , Title=@Title , Price=@Price , Manufacture=@Manufacture , PartNo=@PartNo , MPN=@MPN , UPC=@UPC , Description=@Description , Specification=@Specification , Image_URL=@Image_URL where id=@sourceid";
+                        cmd.Parameters.AddWithValue(@"Category", DPumpCatelog.Category != null ? ReplaceString.PutString(DPumpCatelog.Category) : "");
+                        cmd.Parameters.AddWithValue(@"Title", DPumpCatelog.Title != null ? ReplaceString.PutString(DPumpCatelog.Title) : "");
+                        cmd.Parameters.AddWithValue(@"Price", DPumpCatelog.Price != null ? ReplaceString.PutString(DPumpCatelog.Price) : "");
+                        cmd.Parameters.AddWithValue(@"Manufacture", DPumpCatelog.Manufacture != null ? ReplaceString.PutString(DPumpCatelog.Manufacture) : "");
+                        cmd.Parameters.AddWithValue(@"PartNo", DPumpCatelog.PartNo != null ? ReplaceString.PutString(DPumpCatelog.PartNo) : "");
+                        cmd.Parameters.AddWithValue(@"MPN", DPumpCatelog.MPN != null ? ReplaceString.PutString(DPumpCatelog.MPN) : "");
+                        cmd.Parameters.AddWithValue(@"UPC", DPumpCatelog.UPC != null ? ReplaceString.PutString(DPumpCatelog.UPC) : "");
+                        cmd.Parameters.AddWithValue(@"Description", DPumpCatelog.Description != null ? ReplaceString.PutString(DPumpCatelog.Description) : "");
+                        cmd.Parameters.AddWithValue(@"Specification", DPumpCatelog.Specification != null ? ReplaceString.PutString(DPumpCatelog.Specification) : "");
+                        cmd.Parameters.AddWithValue(@"Image_URL", DPumpCatelog.Image_URL != null ? ReplaceString.PutString(DPumpCatelog.Image_URL) : "");
+                        cmd.Parameters.AddWithValue("@sourceid", sourceid);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+            }
+            catch(Exception ex) {
+                Console.WriteLine("Error While Updating the Product");
             }
         }
         private static void ParseJson()
@@ -125,7 +351,6 @@ namespace pumpcatalog
                 Console.WriteLine("Error While Executing search link update.....");
             }
         }
-
         private static void InsertSearchLink(string Searchlink)
         {
             try
@@ -165,7 +390,7 @@ namespace pumpcatalog
                 Console.WriteLine("Error while inserting product");
             }
         }
-        public static void DownloadString()
+        public static void DownloadHTMLString()
         {
             try
             {
@@ -192,5 +417,20 @@ namespace pumpcatalog
 
             }
         }
+    }
+    public class PumpCatelog
+    {
+        public string Category { get; set; }
+        public string Title { get; set; }
+        public string ProductDesc { get; set; }
+        public string Price { get; set; }
+        public string Manufacture { get; set; }
+        public string PartNo { get; set; }
+        public string MPN { get; set; }
+        public string UPC { get; set; }
+        public string Description { get; set; }
+        public string Specification { get; set; }
+        public string Image_URL { get; set; }
+
     }
 }
