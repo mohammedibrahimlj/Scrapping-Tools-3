@@ -946,7 +946,7 @@
         </member>
         <member name="P:HtmlAgilityPack.HtmlNode.InnerText">
             <summary>
-            Gets or Sets the text between the start and end tags of the object.
+            Gets the text between the start and end tags of the object.
             </summary>
         </member>
         <member name="M:HtmlAgilityPack.HtmlNode.GetDirectInnerText">

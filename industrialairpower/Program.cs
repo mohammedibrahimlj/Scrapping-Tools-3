@@ -23,6 +23,7 @@ namespace industrialairpower
         private static string SourceLink, modifiedlink, Looplink = string.Empty, CookieString = string.Empty, searchquery = string.Empty, Scode = string.Empty, DownloadedString=string.Empty;
         static HtmlDocument h1, h2, h3, h4, h5, h6;
         private static readonly string Homeurl = "https://store.industrialairpower.com/", pdflink = "https://cdn-assets.unilogcorp.com";
+        public static IndustrialPower IndustrialPowerobj;
         static void Main(string[] args)
         {
             SearchPageExtract();
@@ -155,7 +156,6 @@ namespace industrialairpower
             }
             return dataSet;
         }
-
         public static void DownloadString()
         {
             try
@@ -188,5 +188,86 @@ namespace industrialairpower
                 CookieCount = 1;
             }
         }
+        private static void ScrapProduct()
+        {
+            try
+            {
+                IndustrialPowerobj = new IndustrialPower();
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                try
+                {
+                    IndustrialPowerobj.Category = h1.DocumentNode.SelectSingleNode("//div[@class='breadcrumbs']").InnerText.ToString().Trim();
+                }
+                catch { IndustrialPowerobj.Category = ""; }
+                try
+                {
+                    IndustrialPowerobj.ProductTitle = h1.DocumentNode.SelectSingleNode("//h1[@class='page_headers']").InnerText.ToString().Trim();
+                }
+                catch { }
+
+                try
+                {
+                    //extra_field
+
+                    IndustrialPowerobj.Manufacture = h1.DocumentNode.SelectNodes("//div[@class='extra_field']").Where(w => w.InnerText.Contains("Designed For Use With:")).Select(s => s.InnerText.Replace("Designed For Use With:", "")).FirstOrDefault();
+                }
+                catch { IndustrialPowerobj.Manufacture = ""; }
+                try
+                {
+                    //product_id
+
+                    IndustrialPowerobj.PartNo = h1.DocumentNode.SelectSingleNode("//span[@id='product_id']").InnerText.ToString().Trim();
+                }
+                catch { IndustrialPowerobj.PartNo = ""; }
+
+                try
+                {
+                    var techspecdata = h1.DocumentNode.SelectSingleNode("//span[@class='FONT-FAMILY: Tahoma; FONT-SIZE: 10pt; FONT-WEIGHT: bold']").InnerText.ToString().Trim();
+
+                    if (techspecdata != null)
+                    {
+                        string rawspec = string.Empty;
+                        var techspecd1 = h1.DocumentNode.SelectSingleNode("//div[@class='item']");
+                        h2 = null;
+                        h2 = new HtmlDocument();
+                        h2.LoadHtml(techspecd1.InnerHtml.ToString());
+                        var specdata = h2.DocumentNode.SelectNodes("//ul");
+                        if (specdata.Count == 2)
+                        {
+                            rawspec = specdata[2].InnerHtml.ToString();
+                        }
+                        else
+                        {
+                            rawspec = specdata[1].InnerHtml.ToString();
+                        }
+                        if(!string.IsNullOrEmpty(rawspec))
+                        {
+
+                            h3 = null;
+                            h3 = new HtmlDocument();
+                            h3.LoadHtml(rawspec);
+                            IndustrialPowerobj.Specfication = h3.DocumentNode.SelectNodes("//li").Select(s => s.InnerText.ToString().Trim()).Aggregate((a, b) => a + " | " + b).ToString();
+                        }
+                    }
+                }
+                catch { }
+            }
+            catch { }
+        }
+    }
+    public class IndustrialPower
+    {
+        public string Category { get; set; }
+        public string ProductTitle { get; set; }
+        public string ProductDesc { get; set; }
+        public string Manufacture { get; set; }
+        public string PartNo { get; set; }
+        public string MNP { get; set; }
+        public string Description { get; set; }
+        public string Specfication { get; set; }
+        public string Price { get; set; }
+        public string Img_url { get; set; }
     }
 }

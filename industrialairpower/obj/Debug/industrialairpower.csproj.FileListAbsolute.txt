@@ -8,3 +8,11 @@ C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\indu
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\industrialairpower\obj\Debug\industrialairpower.exe
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\industrialairpower\obj\Debug\industrialairpower.pdb
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\industrialairpower\obj\Debug\industrialairpower.csprojResolveAssemblyReference.cache
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\bin\Debug\industrialairpower.exe.config
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\bin\Debug\industrialairpower.exe
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\bin\Debug\industrialairpower.pdb
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\obj\Debug\industrialairpower.csprojAssemblyReference.cache
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\obj\Debug\industrialairpower.csproj.CoreCompileInputs.cache
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\obj\Debug\industrialairpower.csproj.CopyComplete
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\obj\Debug\industrialairpower.exe
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\industrialairpower\obj\Debug\industrialairpower.pdb
