@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HTMLCodeReplacer;
 
 namespace Arrow_CSEXWB
 {
@@ -23,21 +24,44 @@ namespace Arrow_CSEXWB
         private static readonly int end = int.Parse(ConfigurationManager.AppSettings["End"].ToString());
         private static int sourceid, ppage, TotalPage, num = 0, ppcount = 0, TotalCount = 0, CookieCount = 0;
         private static string SourceLink, modifiedlink, Looplink = string.Empty, DSourceLink = string.Empty, CookieString = string.Empty, searchquery = string.Empty;
+        private bool isprocess = false;
         static HtmlAgilityPack.HtmlDocument h1, h2, h3, h4, h5, h6;
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            ArrowProcess();
-        }
-
         private static StringBuilder sb, breadcrum, spec;
         private static List<string> Cookie;
         private static string cookiestr = "";
         private static bool InitilCount = false;
         private static readonly string Homeurl = "https://www.arrow.com";
         private static ArrowProduct ArrowProduct;
-        private csExWB.cEXWB fbrowser=null;
+        private csExWB.cEXWB fbrowser = null;
         private DataSet data;
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (isprocess)
+            {
+                try
+                {
+                    isprocess = false;
+                    DownloadedString = fbrowser.DocumentSource.ToString();
+                    
+                    if (DownloadedString != string.Empty)
+                        ProcessArrowHTML();
+                }
+                catch {
+                    timer.Stop();
+                    num++;
+                    DownloadedString = string.Empty;
+                    ProcessArrowLinkAsync();
+                }
+            }
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+            ArrowProcess();
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -58,36 +82,36 @@ namespace Arrow_CSEXWB
         {
             data = GetData(2);
             TotalCount = data.Tables[0].Rows.Count;
-            ProcessArrowLink();
+            ProcessArrowLinkAsync();
 
         }
 
-        public void ProcessArrowLink()
+        public async Task ProcessArrowLinkAsync()
         {
             try {
 
 
-                Console.Title = Name;
-                if (num < TotalCount)
+                //Console.Title = Name;
+                while (num < TotalCount)
                 {
                     
                     //foreach (DataRow row in data.Tables[0].Rows)
                     //{
                         try
                         {
+                        //cEXWB1 = new csExWB.cEXWB();
+                        //fbrowser = cEXWB1;
+                        isprocess = true;
                             ppcount = 0;
                             SourceLink = string.Empty;
-                            
-                            LabelLog("Processing link " + num + 1 + " of " + TotalCount);
+                            LabelLog("Processing link " + (num + 1 )+ " of " + TotalCount);
                             sourceid = 0;
                             SourceLink = data.Tables[0].Rows[num].ItemArray[1].ToString().Split('\t')[0].Trim();
                             sourceid = int.Parse(data.Tables[0].Rows[num].ItemArray[0].ToString());
                         fbrowser.Navigate(SourceLink);
-                        Task.Delay(5000);
-                        DownloadedString = fbrowser.DocumentSource.ToString();
-                            if (DownloadedString != string.Empty)
-                                ProcessArrowHTML();
-                            
+                        await Task.Delay(7000);
+                        ProcessArrowHTML();
+                        //timer.Start();
                         }
                         catch
                         {
@@ -113,7 +137,7 @@ namespace Arrow_CSEXWB
                             sqlCommand = new SqlCommand("select searchid,SearchLink,TotalLink,processingpage,Searchquery from tbl_Arrow_searchLink where Iscompleted=0 and searchid between " + start + " and " + end + " ", sqlConnection);
                             break;
                         case 2:
-                            sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_Arrow_Product where isnull(category,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
+                            sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_Arrow_Product where isnull(itemtitle,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;
@@ -130,15 +154,17 @@ namespace Arrow_CSEXWB
         }
         private void ProcessArrowHTML()
         {
+            //timer.Stop();
             ArrowProduct = new ArrowProduct();
             breadcrum = new StringBuilder();
             try
             {
+                DownloadedString = fbrowser.DocumentSource.ToString();
                 h1 = new HtmlAgilityPack.HtmlDocument();
                 h1.LoadHtml(DownloadedString);
                 try
                 {
-                    ArrowProduct.itemtitle = h1.DocumentNode.SelectSingleNode("//i[@class='Product-Summary-SubHeading-ProductLine']").InnerText.ToString();
+                    ArrowProduct.itemtitle = h1.DocumentNode.SelectSingleNode("//i[@class='Product-Summary-SubHeading-ProductLine']").InnerText.ToString().Replace("\n","").Trim();
                 }
                 catch
                 {
@@ -146,7 +172,7 @@ namespace Arrow_CSEXWB
                 }
                 try
                 {
-                    ArrowProduct.Productdescription = h1.DocumentNode.SelectNodes("//p[@class='Product-Summary-Details']")[2].InnerText.ToString();
+                    ArrowProduct.Productdescription = h1.DocumentNode.SelectNodes("//p[@class='Product-Summary-Details']")[2].InnerText.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
@@ -154,7 +180,7 @@ namespace Arrow_CSEXWB
                 }
                 try
                 {
-                    ArrowProduct.Manufacturename = h1.DocumentNode.SelectNodes("//p[@class='Product-Summary-Details']")[0].InnerText.ToString();
+                    ArrowProduct.Manufacturename = h1.DocumentNode.SelectNodes("//p[@class='Product-Summary-Details']")[0].InnerText.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
@@ -162,14 +188,14 @@ namespace Arrow_CSEXWB
                 }
                 try
                 {
-                    ArrowProduct.MPN = h1.DocumentNode.SelectSingleNode("//span[@class='product-summary-name--Original']").InnerText.ToString();
+                    ArrowProduct.MPN = h1.DocumentNode.SelectSingleNode("//span[@class='product-summary-name--Original']").InnerText.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
                 }
                 try
                 {
-                    ArrowProduct.productcategory = h1.DocumentNode.SelectNodes("//p[@class='Product-Summary-Details']")[1].InnerText.ToString();
+                    ArrowProduct.productcategory = h1.DocumentNode.SelectNodes("//p[@class='Product-Summary-Details']")[1].InnerText.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
@@ -177,7 +203,7 @@ namespace Arrow_CSEXWB
                 }
                 try
                 {
-                    ArrowProduct.UOM = h1.DocumentNode.SelectSingleNode("//span[@class='BuyingOptions-caption BuyingOptions-total-priceFor']").InnerText.ToString().Trim();
+                    ArrowProduct.UOM = h1.DocumentNode.SelectSingleNode("//span[@class='BuyingOptions-caption BuyingOptions-total-priceFor']").InnerText.ToString().Trim().Replace("\n", "").Trim();
                 }
                 catch
                 {
@@ -185,7 +211,7 @@ namespace Arrow_CSEXWB
                 }
                 try
                 {
-                    ArrowProduct.price = h1.DocumentNode.SelectSingleNode("//span[@class='BuyingOptions-total-price ng-star-inserted']").InnerText.ToString();
+                    ArrowProduct.price = h1.DocumentNode.SelectSingleNode("//span[@class='BuyingOptions-total-price ng-star-inserted']").InnerText.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
@@ -193,14 +219,14 @@ namespace Arrow_CSEXWB
                 }
                 try
                 {
-                    ArrowProduct.imageurl = "https:" + h1.DocumentNode.SelectSingleNode("//img[@class='Product-Summary-Image']").Attributes["src"].Value.ToString();
+                    ArrowProduct.imageurl = "https:" + h1.DocumentNode.SelectSingleNode("//img[@class='Product-Summary-Image']").Attributes["src"].Value.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
 
                     try
                     {
-                        ArrowProduct.imageurl = h1.DocumentNode.SelectNodes("//a[@class='Product-Summary-ImageCarousel-slide slick-slide slick-current slick-active is-active ng-star-inserted']").Select(s => "https:" + s.Attributes["data-image"].Value).Aggregate((a, b) => a + " | " + b).ToString();
+                        ArrowProduct.imageurl = h1.DocumentNode.SelectNodes("//a[@class='Product-Summary-ImageCarousel-slide slick-slide slick-current slick-active is-active ng-star-inserted']").Select(s => "https:" + s.Attributes["data-image"].Value).Aggregate((a, b) => a + " | " + b).ToString().Replace("\n", "").Trim();
                     }
                     catch
                     {
@@ -221,7 +247,7 @@ namespace Arrow_CSEXWB
                     {
                         breadcrum.Append(item.InnerText.ToString().Trim() + " | ");
                     }
-                    ArrowProduct.category = breadcrum.ToString();
+                    ArrowProduct.category = breadcrum.ToString().Replace("\n", "").Trim();
                 }
                 catch
                 {
@@ -266,7 +292,7 @@ namespace Arrow_CSEXWB
                         }
                     }
                     catch { }
-                    ArrowProduct.techspec = spec.ToString();
+                    ArrowProduct.techspec = spec.ToString().Replace("\n", "").Trim();
 
                 }
                 catch
@@ -280,7 +306,15 @@ namespace Arrow_CSEXWB
             }
             finally
             {
-                UpdateProductData(ArrowProduct);
+                if (string.IsNullOrEmpty(DownloadedString))
+                {
+                    ArrowProduct.itemtitle = "404 Error";
+                    UpdateProductData(ArrowProduct);
+                }
+                else
+                {
+                    UpdateProductData(ArrowProduct);
+                }
                 breadcrum = null;
                 ArrowProduct = null;
                 h2 = null;
@@ -288,7 +322,7 @@ namespace Arrow_CSEXWB
                 spec = null;
                 num++;
                 DownloadedString = string.Empty;
-                ProcessArrowLink();
+                //ProcessArrowLinkAsync();
             }
         }
         public void UpdateProductData(ArrowProduct ArrowProduct)
@@ -301,16 +335,16 @@ namespace Arrow_CSEXWB
                     sqlConnection.Open();
                     SqlCommand sqlCommand = new SqlCommand("update [dbo].[tbl_Arrow_Product] set itemtitle=@itemtitle,Productdescription=@Productdescription,MPN=@MPN,Manufacturename=@Manufacturename,productcategory=@productcategory,UOM=@UOM,price=@price,imageurl=@imageurl,category=@category,techspec=@techspec where Productid=@id", sqlConnection);
                     sqlCommand.CommandType = CommandType.Text;
-                    sqlCommand.Parameters.AddWithValue("@itemtitle", (ArrowProduct.itemtitle == null) ? "" : ArrowProduct.itemtitle);
-                    sqlCommand.Parameters.AddWithValue("@Productdescription", (ArrowProduct.Productdescription == null) ? "" : ArrowProduct.Productdescription);
-                    sqlCommand.Parameters.AddWithValue("@MPN", (ArrowProduct.MPN == null) ? "" : ArrowProduct.MPN);
-                    sqlCommand.Parameters.AddWithValue("@Manufacturename", (ArrowProduct.Manufacturename == null) ? "" : ArrowProduct.Manufacturename);
-                    sqlCommand.Parameters.AddWithValue("@productcategory", (ArrowProduct.productcategory == null) ? "" : ArrowProduct.productcategory);
-                    sqlCommand.Parameters.AddWithValue("@UOM", (ArrowProduct.UOM == null) ? "" : ArrowProduct.UOM);
-                    sqlCommand.Parameters.AddWithValue("@price", (ArrowProduct.price == null) ? "" : ArrowProduct.price);
-                    sqlCommand.Parameters.AddWithValue("@imageurl", (ArrowProduct.imageurl == null) ? "" : ArrowProduct.imageurl);
-                    sqlCommand.Parameters.AddWithValue("@category", (ArrowProduct.category == null) ? "" : ArrowProduct.category);
-                    sqlCommand.Parameters.AddWithValue("@techspec", (ArrowProduct.techspec == null) ? "" : ArrowProduct.techspec);
+                    sqlCommand.Parameters.AddWithValue("@itemtitle", (ArrowProduct.itemtitle == null) ? "" :ReplaceString.PutString(ArrowProduct.itemtitle));
+                    sqlCommand.Parameters.AddWithValue("@Productdescription", (ArrowProduct.Productdescription == null) ? "" : ReplaceString.PutString(ArrowProduct.Productdescription));
+                    sqlCommand.Parameters.AddWithValue("@MPN", (ArrowProduct.MPN == null) ? "" : ReplaceString.PutString(ArrowProduct.MPN));
+                    sqlCommand.Parameters.AddWithValue("@Manufacturename", (ArrowProduct.Manufacturename == null) ? "" : ReplaceString.PutString(ArrowProduct.Manufacturename));
+                    sqlCommand.Parameters.AddWithValue("@productcategory", (ArrowProduct.productcategory == null) ? "" : ReplaceString.PutString(ArrowProduct.productcategory));
+                    sqlCommand.Parameters.AddWithValue("@UOM", (ArrowProduct.UOM == null) ? "" : ReplaceString.PutString(ArrowProduct.UOM));
+                    sqlCommand.Parameters.AddWithValue("@price", (ArrowProduct.price == null) ? "" : ReplaceString.PutString(ArrowProduct.price));
+                    sqlCommand.Parameters.AddWithValue("@imageurl", (ArrowProduct.imageurl == null) ? "" : ReplaceString.PutString(ArrowProduct.imageurl));
+                    sqlCommand.Parameters.AddWithValue("@category", (ArrowProduct.category == null) ? "" : ReplaceString.PutString(ArrowProduct.category));
+                    sqlCommand.Parameters.AddWithValue("@techspec", (ArrowProduct.techspec == null) ? "" : ReplaceString.PutString(ArrowProduct.techspec));
                     //sqlCommand.Parameters.AddWithValue("@ProductURL", SourceLink);
                     sqlCommand.Parameters.AddWithValue("@id", sourceid);
                     sqlCommand.ExecuteNonQuery();

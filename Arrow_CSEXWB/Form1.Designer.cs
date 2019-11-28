@@ -30,10 +30,12 @@ namespace Arrow_CSEXWB
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.cEXWB1 = new csExWB.cEXWB();
             this.Log = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,6 +98,11 @@ namespace Arrow_CSEXWB
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
+            // timer
+            // 
+            this.timer.Interval = 8000;
+            this.timer.Tick += new System.EventHandler(this.Timer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -118,6 +125,7 @@ namespace Arrow_CSEXWB
         private csExWB.cEXWB cEXWB1;
         private System.Windows.Forms.Label Log;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Timer timer;
     }
 }
 
