@@ -9,3 +9,7 @@ C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\pump
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\pumpcatalog\bin\Debug\Newtonsoft.Json.xml
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\pumpcatalog\obj\Debug\pumpcatalog.exe
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\pumpcatalog\obj\Debug\pumpcatalog.pdb
+C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\pumpcatalog\obj\Debug\pumpcatalog.csprojResolveAssemblyReference.cache
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\pumpcatalog\bin\Debug\pumpcatalog.exe.config
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\pumpcatalog\obj\Debug\pumpcatalog.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\pumpcatalog\obj\Debug\pumpcatalog.pdb

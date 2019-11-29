@@ -53,7 +53,6 @@ namespace pumpcatalog
                             SourceLink = string.Empty;
                             sourceid = 0;
                             Console.WriteLine("Processing link " + num + " of " + TotalCount);
-                            SourceLink = "https://www.pumpcatalog.com/berkeley/water-system-parts/001355/";
                             SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
                             sourceid = int.Parse(row.ItemArray[0].ToString());
                             DownloadHTMLString();
