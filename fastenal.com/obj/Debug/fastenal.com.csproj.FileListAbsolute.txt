@@ -1,0 +1,10 @@
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\fastenal.com.exe.config
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\fastenal.com.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\fastenal.com.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\HtmlAgilityPack.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\HTMLCodeReplacer.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\HtmlAgilityPack.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\bin\Debug\HtmlAgilityPack.xml
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\obj\Debug\fastenal.com.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\obj\Debug\fastenal.com.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fastenal.com\obj\Debug\fastenal.com.csprojResolveAssemblyReference.cache
