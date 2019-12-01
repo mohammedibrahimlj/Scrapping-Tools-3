@@ -15,3 +15,4 @@ F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\Arrow_CSEXWB\obj\x86\D
 F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\Arrow_CSEXWB\obj\x86\Debug\Arrow_CSEXWB.csproj.CopyComplete
 F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\Arrow_CSEXWB\obj\x86\Debug\Arrow_CSEXWB.exe
 F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\Arrow_CSEXWB\obj\x86\Debug\Arrow_CSEXWB.pdb
+F:\Freelancer Code\Scrapping Tools Code\Scrapping-Tools-3\Arrow_CSEXWB\obj\x86\Debug\Arrow_CSEXWB.csprojAssemblyReference.cache

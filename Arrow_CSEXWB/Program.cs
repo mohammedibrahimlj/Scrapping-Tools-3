@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Arrow_CSEXWB
+namespace CSEXWBrowser
 {
     static class Program
     {

@@ -14,13 +14,14 @@ namespace fastenal.com
 {
     class Program
     {
-        private static readonly string Name = ConfigurationManager.AppSettings["Name"].ToString(),Homeurl= "https://www.fastenal.com/",ProductURL= "https://www.fastenal.com/products/details/";
+        private static readonly string Name = ConfigurationManager.AppSettings["Name"].ToString(),Homeurl= "https://www.fastenal.com",ProductURL= "https://www.fastenal.com/products/details/";
         private static readonly int start = int.Parse(ConfigurationManager.AppSettings["Start"].ToString());
         private static readonly int end = int.Parse(ConfigurationManager.AppSettings["End"].ToString());
         private static readonly string connection = ConfigurationManager.AppSettings["connection"].ToString();
         private static int sourceid, ppage, TotalPage, num = 0, ppcount = 0, TotalCount = 0, CookieCount = 0;
         private static string SourceLink, DownloadedString;
         static HtmlDocument h1, h2, h3, h4, h5, h6;
+        private static readonly string PageQuery = "&page=XpageX&pageSize=48&exactSkuMatchLevel=useData";
         static void Main(string[] args)
         {
             Console.Title = Name;
@@ -38,13 +39,15 @@ namespace fastenal.com
                     {
                         try
                         {
+                            ppcount = 1;
                             SourceLink = string.Empty;
                             sourceid = 0;
                             Console.WriteLine("Processing link " + num + " of " + TotalCount);
                             SourceLink = row.ItemArray[1].ToString().Replace("&amp;","&").Trim();
                             sourceid = int.Parse(row.ItemArray[0].ToString());
                             DownloadHTMLString();
-                            SearchProLink();
+                            FastenalSearchProLinkPage();
+                            //SearchProLink();
                             //ProcessProductHTML();
                             num++;
                         }
@@ -56,6 +59,50 @@ namespace fastenal.com
             }
             Console.WriteLine("Completed....");
             Console.ReadKey();
+        }
+        private static void FastenalSearchProLinkPage()
+        {
+            ppage = 0;
+            PageLoop:
+            try
+            {
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                TotalPage = int.Parse(h1.DocumentNode.SelectSingleNode("//span[@class='pagination-text']").InnerText.ToString().Split(' ')[0].ToString());
+
+                try
+                {
+                    var productitem = h1.DocumentNode.SelectNodes("//div[@class='media-item-row']");
+                    foreach (var protag in productitem)
+                    {
+                        h2 = null;
+                        h2 = new HtmlDocument();
+                        h2.LoadHtml(protag.InnerHtml.ToString());
+                        var productlinks = h2.DocumentNode.SelectNodes("//a");
+                        
+                        foreach(var product in productlinks)
+                        {
+                            ppage += 1;
+                            InsertProductLink(Homeurl + product.Attributes["href"].Value.ToString());
+                        }
+                    }
+                }
+                catch { }
+                if (ppage < TotalPage)
+                {
+                    ppcount += 1;
+                    FastenalUpdateSearchLinkStatus(0);
+                    DownloadHTMLString();
+                    goto PageLoop;
+                }
+                else
+                {
+                    FastenalUpdateSearchLinkStatus(1);
+                }
+
+            }
+            catch { }
         }
         private static void SearchProLink()
         {
@@ -70,7 +117,7 @@ namespace fastenal.com
                     var s1Link = h1.DocumentNode.SelectSingleNode("//div[@class='category-container']").InnerHtml.ToString();
                     if (!string.IsNullOrEmpty(s1Link))
                     {
-                        UpdateSearchLinkStatus(1);
+                        FastenalUpdateSearchLinkStatus(1);
                         //h2 = null;
                         //h2 = new HtmlDocument();
                         //h2.LoadHtml(s1Link.ToString());
@@ -95,7 +142,7 @@ namespace fastenal.com
 
                     if (s2link != null)
                     {
-                        UpdateSearchLinkStatus(1);
+                        FastenalUpdateSearchLinkStatus(1);
                         //foreach (var searchlink in s2link)
                         //{
                         //    h2 = null;
@@ -125,7 +172,7 @@ namespace fastenal.com
                         InsertProductLink(ProductURL + plink.InnerText.ToString().Replace("\n","").Trim());
                     }
 
-                    UpdateSearchLinkStatus(1);
+                    FastenalUpdateSearchLinkStatus(1);
                 }
                 catch { }
             }
@@ -137,7 +184,7 @@ namespace fastenal.com
                 h2 = null;
             }
         }
-        private static void InsertSearchLink(string productlink)
+        private static void FastenalInsertSearchLink(string productlink)
         {
             try
             {
@@ -159,7 +206,7 @@ namespace fastenal.com
                 Console.WriteLine("Error while inserting search link");
             }
         }
-        private static void InsertProductLink(string productlink)
+        private static void FastenalInsertProductLink(string productlink)
         {
             try
             {
@@ -182,7 +229,7 @@ namespace fastenal.com
             }
         }
 
-        private static void UpdateSearchLinkStatus(int iscompleted)
+        private static void FastenalUpdateSearchLinkStatus(int iscompleted)
         {
             try
             {
@@ -212,8 +259,9 @@ namespace fastenal.com
             {
                 DownloadedString = string.Empty;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SourceLink);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SourceLink + PageQuery.Replace("XpageX", ppcount.ToString()));
                 request.KeepAlive = true;
+                request.AllowAutoRedirect = true;
                 request.Headers.Set(HttpRequestHeader.CacheControl, "max-age=0");
                 request.Headers.Add("Upgrade-Insecure-Requests", @"1");
                 request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
@@ -224,7 +272,7 @@ namespace fastenal.com
                 //request.Referer = "https://www.fastenal.com/product/abrasives/coated-and-non-woven-abrasives/600955?categoryId=600955&level=2&isExpanded=true";
                 //request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
                 request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.9");
-                request.Headers.Set(HttpRequestHeader.Cookie, @"JSESSIONID=5AfPn21Y8SuFclt30UFXjOX4.12a9fabb-3422-3f02-933e-c39f262061e2; NEW_SEARCH_EXPERIENCE=0.057376146; mt.v=2.1128676059.1575031992726; COOKIE_AGREEMENT=0; org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE=en_US; _gcl_au=1.1.1259528889.1575032013; __mauuid=2ec53ab1-70ca-43ab-92b5-19945fc27165; __mauuid=2ec53ab1-70ca-43ab-92b5-19945fc27165; __mauuid=2ec53ab1-70ca-43ab-92b5-19945fc27165; _ga=GA1.3.718821677.1575032013; _gid=GA1.3.1437952048.1575032013; _hjid=fdad0035-a120-4927-8d72-689f4ffc18d0; _ga=GA1.2.718821677.1575032013; _gid=GA1.2.1437952048.1575032013");
+                request.Headers.Set(HttpRequestHeader.Cookie, @"JSESSIONID=6Fptw7ybGcwqge4f2nSU7LL-.d36f637b-91a9-3b2b-9fa6-50af87272845; NEW_SEARCH_EXPERIENCE=0.84647965; _ga=GA1.3.1995995924.1575084835; _gid=GA1.3.113100706.1575084835; _dc_gtm_UA-2555468-6=1; __mauuid=040b86dd-2c6f-4937-83f0-19945f839d12; __mauuid=040b86dd-2c6f-4937-83f0-19945f839d12; _gali=cookieAgreementModal; mt.v=2.248824700.1575084833043; _gcl_au=1.1.238987160.1575084834; _ga=GA1.2.1995995924.1575084835; _gid=GA1.2.113100706.1575084835; _gat_UA-2555468-6=1; __mauuid=040b86dd-2c6f-4937-83f0-19945f839d12; _hjid=3c3408f5-fe33-485c-ab61-cd27d69bfa9c; COOKIE_AGREEMENT=1");
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 Stream responseStream = response.GetResponseStream();
                 StreamReader streamReader = new StreamReader(responseStream, Encoding.UTF8);

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HTMLCodeReplacer;
 
-namespace Arrow_CSEXWB
+namespace CSEXWBrowser
 {
     public partial class Form1 : Form
     {
@@ -76,11 +76,13 @@ namespace Arrow_CSEXWB
             //panel1.Controls.Add(fbrowser);
             fbrowser.Navigate("www.google.com");
             Task.Delay(5000);
+            //ArrowProcess();
+            FastenalProcess();
         }
 
         private void ArrowProcess()
         {
-            data = GetData(2);
+            data =GetDataAsync(2).GetAwaiter().GetResult();
             TotalCount = data.Tables[0].Rows.Count;
             ProcessArrowLinkAsync();
 
@@ -110,9 +112,10 @@ namespace Arrow_CSEXWB
                             sourceid = int.Parse(data.Tables[0].Rows[num].ItemArray[0].ToString());
                         fbrowser.Navigate(SourceLink);
                         await Task.Delay(7000);
-                        ProcessArrowHTML();
+                        //ProcessArrowHTML();
+                        FastenalSearchProLinkPageAsync();
                         //timer.Start();
-                        }
+                    }
                         catch
                         {
                         }
@@ -121,7 +124,7 @@ namespace Arrow_CSEXWB
             }
             catch { }
         }
-        public DataSet GetData(int option = 1)
+        public async Task<DataSet> GetDataAsync(int option = 1)
         {
             SqlCommand sqlCommand = new SqlCommand();
             DataSet dataSet = new DataSet();
@@ -138,6 +141,9 @@ namespace Arrow_CSEXWB
                             break;
                         case 2:
                             sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_Arrow_Product where isnull(itemtitle,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
+                            break;
+                        case 3:
+                            sqlCommand = new SqlCommand("select searchid,SearchTitle from tbl_fastenal_SearchLink where  iscompleted=0 ", sqlConnection);
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;
@@ -360,8 +366,117 @@ namespace Arrow_CSEXWB
             Log.Invoke((MethodInvoker)(() => Log.Text = Logmsg.ToString()));
 
         }
+
+        #region Fastenal
+        private void FastenalProcess()
+        {
+            button1.Enabled = false;
+            data = GetDataAsync(3).GetAwaiter().GetResult();
+            TotalCount = data.Tables[0].Rows.Count;
+            ProcessArrowLinkAsync();
+
+
+        }
+
+        private async Task FastenalSearchProLinkPageAsync()
+        {
+            ppage = 0;
+        PageLoop:
+            try
+            {
+                DownloadedString = fbrowser.DocumentSource.ToString();
+                h1 = null;
+                h1 = new HtmlAgilityPack.HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                TotalPage = int.Parse(h1.DocumentNode.SelectSingleNode("//span[@class='pagination-text']").InnerText.ToString().Split(' ')[0].ToString());
+
+                try
+                {
+                    var productitem = h1.DocumentNode.SelectNodes("//div[@class='media-item-row']");
+                    foreach (var protag in productitem)
+                    {
+                        h2 = null;
+                        h2 = new HtmlAgilityPack.HtmlDocument();
+                        h2.LoadHtml(protag.InnerHtml.ToString());
+                        var productlinks = h2.DocumentNode.SelectNodes("//a");
+
+                        foreach (var product in productlinks)
+                        {
+                            ppage += 1;
+                            FastenalInsertProductLink(Homeurl + product.Attributes["href"].Value.ToString());
+                        }
+                    }
+                }
+                catch { }
+                if (ppage < TotalPage)
+                {
+                    ppcount += 1;
+                    FastenalUpdateSearchLinkStatus(0);
+                    //DownloadHTMLString();
+                    fbrowser.Navigate(SourceLink);
+                    await Task.Delay(7000);
+                    DownloadedString = string.Empty;
+                    goto PageLoop;
+                }
+                else
+                {
+                    FastenalUpdateSearchLinkStatus(1);
+                }
+
+            }
+            catch { }
+        }
+
+        private static void FastenalInsertProductLink(string productlink)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+                        cmd.CommandText = "insert into tbl_fastenal_product (Producturl,sourceid) values(@productlink,@sourceid)";
+                        cmd.Parameters.AddWithValue("@productlink", productlink);
+                        cmd.Parameters.AddWithValue("@sourceid", sourceid);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error while inserting Product");
+            }
+        }
+
+        private static void FastenalUpdateSearchLinkStatus(int iscompleted)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+                        cmd.CommandText = "update tbl_fastenal_SearchLink set iscompleted=@iscompleted, TotalLink=@TotalLink, processingpage=@processingpage where searchid=@sourceid";
+                        cmd.Parameters.AddWithValue("@TotalLink", TotalPage);
+                        cmd.Parameters.AddWithValue("@sourceid", sourceid);
+                        cmd.Parameters.AddWithValue("@processingpage", ppcount);
+                        cmd.Parameters.AddWithValue("@iscompleted", iscompleted);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Error While update status.....");
+            }
+        }
+        #endregion
     }
-        public class ArrowProduct
+    public class ArrowProduct
     {
         public string itemtitle
         {

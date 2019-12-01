@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arrow.com", "Arrow.com\Arrow.com.csproj", "{C109880C-6D34-43D6-A8FB-8CC1909097F0}"
 EndProject
@@ -13,9 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pumpcatalog", "pumpcatalog\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "abf.store", "abf.store\abf.store.csproj", "{6A0BA8A9-DA7B-47B7-8D50-5258B727047B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arrow_CSEXWB", "Arrow_CSEXWB\Arrow_CSEXWB.csproj", "{4B86F942-C0A9-49CF-A0CB-9A14CCD01E71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSEXWBrowser", "Arrow_CSEXWB\CSEXWBrowser.csproj", "{4B86F942-C0A9-49CF-A0CB-9A14CCD01E71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fastenal.com", "fastenal.com\fastenal.com.csproj", "{42E646D4-90F9-4008-A5C3-8A2B80556F2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "start_stop_process", "start_stop_process\start_stop_process.csproj", "{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,14 @@ Global
 		{42E646D4-90F9-4008-A5C3-8A2B80556F2F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{42E646D4-90F9-4008-A5C3-8A2B80556F2F}.Release|x86.ActiveCfg = Release|Any CPU
 		{42E646D4-90F9-4008-A5C3-8A2B80556F2F}.Release|x86.Build.0 = Release|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Debug|x86.Build.0 = Debug|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|x86.ActiveCfg = Release|Any CPU
+		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

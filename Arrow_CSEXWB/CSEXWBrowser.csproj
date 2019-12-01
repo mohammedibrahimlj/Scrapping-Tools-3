@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4B86F942-C0A9-49CF-A0CB-9A14CCD01E71}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Arrow_CSEXWB</RootNamespace>
-    <AssemblyName>Arrow_CSEXWB</AssemblyName>
+    <RootNamespace>CSEXWBrowser</RootNamespace>
+    <AssemblyName>CSEXWBrowser</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

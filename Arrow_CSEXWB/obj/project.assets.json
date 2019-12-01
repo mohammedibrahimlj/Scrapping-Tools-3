@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.7.2": {
+    ".NETFramework,Version=v4.5.2": {
       "HTMLCodeReplace/1.0.0": {
         "type": "package",
         "compile": {
@@ -12,7 +12,7 @@
         }
       }
     },
-    ".NETFramework,Version=v4.7.2/win": {
+    ".NETFramework,Version=v4.5.2/win": {
       "HTMLCodeReplace/1.0.0": {
         "type": "package",
         "compile": {
@@ -23,7 +23,7 @@
         }
       }
     },
-    ".NETFramework,Version=v4.7.2/win-x64": {
+    ".NETFramework,Version=v4.5.2/win-x64": {
       "HTMLCodeReplace/1.0.0": {
         "type": "package",
         "compile": {
@@ -34,7 +34,7 @@
         }
       }
     },
-    ".NETFramework,Version=v4.7.2/win-x86": {
+    ".NETFramework,Version=v4.5.2/win-x86": {
       "HTMLCodeReplace/1.0.0": {
         "type": "package",
         "compile": {
@@ -61,7 +61,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.7.2": [
+    ".NETFramework,Version=v4.5.2": [
       "HTMLCodeReplace >= 1.0.0"
     ]
   },
@@ -72,9 +72,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\Arrow_CSEXWB.csproj",
-      "projectName": "Arrow_CSEXWB",
-      "projectPath": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\Arrow_CSEXWB.csproj",
+      "projectUniqueName": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\CSEXWBrowser.csproj",
+      "projectName": "CSEXWBrowser",
+      "projectPath": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\CSEXWBrowser.csproj",
       "packagesPath": "C:\\Users\\Mohammed's\\.nuget\\packages\\",
       "outputPath": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\obj\\",
       "projectStyle": "PackageReference",
@@ -88,20 +88,20 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net472"
+        "net452"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net472": {
+        "net452": {
           "projectReferences": {}
         }
       }
     },
     "frameworks": {
-      "net472": {
+      "net452": {
         "dependencies": {
           "HTMLCodeReplace": {
             "target": "Package",
