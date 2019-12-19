@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HTMLCodeReplacer;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -21,12 +22,13 @@ namespace fastenal.com
         private static int sourceid, ppage, TotalPage, num = 0, ppcount = 0, TotalCount = 0, CookieCount = 0;
         private static string SourceLink, DownloadedString;
         static HtmlDocument h1, h2, h3, h4, h5, h6;
+        static fastenal fastenal;
         static void Main(string[] args)
         {
             Console.Title = Name;
             while (true)
             {
-                DataSet data = GetData(1);
+                DataSet data = GetData(2);
                 if (data != null)
                 {
                     TotalCount = data.Tables[0].Rows.Count;
@@ -41,10 +43,18 @@ namespace fastenal.com
                             SourceLink = string.Empty;
                             sourceid = 0;
                             Console.WriteLine("Processing link " + num + " of " + TotalCount);
-                            SourceLink = row.ItemArray[1].ToString().Replace("&amp;","&").Trim();
+                            SourceLink = row.ItemArray[1].ToString().Replace("&amp;", "&").Trim();
                             sourceid = int.Parse(row.ItemArray[0].ToString());
                             DownloadHTMLString();
-                            SearchProLink();
+                            //SearchProLink();
+                            if (string.IsNullOrEmpty(DownloadedString))
+                            {
+                                Console.WriteLine("Product Download Failed!!!");
+                            }
+                            else
+                            {
+                                ProcessProductLink();
+                            }
                             //ProcessProductHTML();
                             num++;
                         }
@@ -56,6 +66,159 @@ namespace fastenal.com
             }
             Console.WriteLine("Completed....");
             Console.ReadKey();
+        }
+
+        public static void ProcessProductLink()
+        {
+            try
+            {
+                fastenal = new fastenal();
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                try
+                {
+                    fastenal.Title = h1.DocumentNode.SelectSingleNode("//div[@class='info--description ']").InnerText.ToString().Trim();
+                }
+                catch
+                {
+                    fastenal.Title = "";
+                }
+                try
+                {
+                    var tabledata = h1.DocumentNode.SelectSingleNode("//table[@class='table general-info__table margin--none']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(tabledata);
+                    foreach (var data in h2.DocumentNode.SelectNodes("//tr"))
+                    {
+                        if (data.InnerText.Contains("Fastenal Part No"))
+                        {
+                            try
+                            {
+                                h3 = null;
+                                h3 = new HtmlDocument();
+                                h3.LoadHtml(data.InnerHtml.ToString());
+                                fastenal.FastePartNo = "#"+h3.DocumentNode.SelectNodes("//td")[1].InnerText.ToString().Trim();
+                            }
+                            catch { fastenal.FastePartNo = ""; }
+                        }
+                        else if (data.InnerText.Contains("Manufacturer Part"))
+                        {
+                            try
+                            {
+                                h3 = null;
+                                h3 = new HtmlDocument();
+                                h3.LoadHtml(data.InnerHtml.ToString());
+                                fastenal.ManuPartNo = "#"+h3.DocumentNode.SelectNodes("//td")[1].InnerText.ToString().Trim();
+                            }
+                            catch { fastenal.ManuPartNo = ""; }
+                        }
+                        else if (data.InnerText.Contains("UNSPSC"))
+                        {
+                            try
+                            {
+                                h3 = null;
+                                h3 = new HtmlDocument();
+                                h3.LoadHtml(data.InnerHtml.ToString());
+                                fastenal.UNSPSC = "#" + h3.DocumentNode.SelectNodes("//td")[1].InnerText.ToString().Trim();
+                            }
+                            catch { fastenal.UNSPSC = ""; }
+                        }
+                        else if (data.InnerText.Contains("Manufacturer"))
+                        {
+                            try
+                            {
+                                h3 = null;
+                                h3 = new HtmlDocument();
+                                h3.LoadHtml(data.InnerHtml.ToString());
+                                fastenal.ManuName = h3.DocumentNode.SelectNodes("//td")[1].InnerText.ToString().Trim();
+                            }
+                            catch { fastenal.ManuName = ""; }
+                        }
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    fastenal.WPrice = h1.DocumentNode.SelectSingleNode("//div[@class='whole__sale--label text--highlight color--blue margin-bottom--5']").InnerText.ToString().Replace("\n","").Replace("Wholesale:","").Replace("&nbsp;"," ").Trim().Split('/').Aggregate((a, b) => a.Trim() + " " + b.Trim());
+                }
+                catch { fastenal.WPrice = ""; }
+                try
+                {
+                    fastenal.Oprice = h1.DocumentNode.SelectSingleNode("//div[@class='color-highlight text--highlight margin-bottom--5']").InnerText.ToString().Replace("\n", "").Replace("Online Price:", "").Trim().Replace("&nbsp;", " ").Split('/').Aggregate((a,b)=>a.Trim()+" "+b.Trim());
+                }
+                catch { fastenal.Oprice = ""; }
+                try
+                {
+                    fastenal.UPrice = h1.DocumentNode.SelectSingleNode("//div[@class='color-highlight text--small margin-bottom--5']").InnerText.ToString().Replace("Unit Price:", "").Replace("&nbsp;", " ").Split('/')[0].Replace("\n", "").Trim();
+                }
+                catch { fastenal.UPrice = ""; }
+                //try
+                //{
+                //    fastenal.UOM = h1.DocumentNode.SelectSingleNode("//div[@class='color-highlight text--small margin-bottom--5']").InnerText.ToString().Replace("Unit Price:", "").Split('/')[1].Replace("\n", "").Trim();
+                //}
+                //catch { fastenal.UOM = ""; }
+                try
+                {
+                    var spectable = h1.DocumentNode.SelectSingleNode("//table[@class='table product__attribute--info']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(spectable);
+                    var trdata = h2.DocumentNode.SelectNodes("//tr");
+                    foreach (var tr in trdata)
+                    {
+
+                        try
+                        {
+                            h3 = null;
+                            h3 = new HtmlDocument();
+                            h3.LoadHtml(tr.InnerHtml);
+                            if (tr.InnerText.Contains("UOM"))
+                            {
+                                fastenal.UOM = h3.DocumentNode.SelectNodes("//td")[1].InnerText.ToString().Trim();
+                            }
+                            else
+                            {
+                                fastenal.Spec += h3.DocumentNode.SelectNodes("//td").Select(s => s.InnerText.ToString().Trim()).Aggregate((a, b) => a + " : " + b).ToString() + " | ";
+                            }
+                        }
+                        catch { }
+                    }
+                }
+                catch { fastenal.Spec = ""; }
+                try
+                {
+                    var imgdiv = h1.DocumentNode.SelectSingleNode("//div[@id='primary-image']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(imgdiv);
+                    fastenal.ImageLink = h2.DocumentNode.SelectNodes("//img").Select(s => "https:"+s.Attributes["src"].Value.ToString()).Aggregate((a, b) => a + " | " + b).ToString();
+                }
+                catch { }
+                try
+                {
+                    var breadcrum = h1.DocumentNode.SelectSingleNode("//div[@class='breadcrumbs']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(breadcrum);
+                    fastenal.Category = h2.DocumentNode.SelectNodes("//li").Select(s => s.InnerText.ToString().Trim()).Aggregate((a, b) => a + " | " + b).ToString();
+                }
+                catch { fastenal.Category = ""; }
+            }
+            catch { }
+            finally
+            {
+
+                h1 = null;
+                h2 = null;
+                h3 = null;
+                DownloadedString = string.Empty;
+                UpdateProductData();
+                fastenal = null;
+
+            }
         }
         private static void SearchProLink()
         {
@@ -232,7 +395,15 @@ namespace fastenal.com
             }
             catch (WebException ex)
             {
-
+                HttpWebResponse resp = ex.Response as HttpWebResponse;
+                if (resp != null && resp.StatusCode == HttpStatusCode.NotFound)
+                {
+                    fastenal = new fastenal();
+                    Console.WriteLine("Downdstring failed..." + ex.ToString());
+                    fastenal.Category = ex.ToString();
+                    UpdateProductData();
+                    fastenal = null;
+                }
             }
         }
         public static DataSet GetData(int option = 1)
@@ -251,7 +422,7 @@ namespace fastenal.com
                             sqlCommand = new SqlCommand("select searchid,SearchTitle from tbl_fastenal_SearchLink where  iscompleted=0 ", sqlConnection);
                             break;
                         case 2:
-                            sqlCommand = new SqlCommand("select id,productlink from tbl_pumpcatalog_product where isnull(Category,'')='' and id  between " + start + " and " + end + " ", sqlConnection);
+                            sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_fastenal_productData where isnull(Title,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;
@@ -266,5 +437,52 @@ namespace fastenal.com
             }
             return dataSet;
         }
+
+        public static void UpdateProductData()
+        {
+            try
+            {
+                Console.WriteLine("Update product data !!");
+                using (SqlConnection sqlConnection = new SqlConnection(connection))
+                {
+                    sqlConnection.Open();
+                    SqlCommand sqlCommand = new SqlCommand("update [dbo].[tbl_fastenal_productData] set Title=@Title ,ManuPartNo=@ManuPartNo ,ManuName=@ManuName ,FastePartNo=@FastePartNo ,WPrice=@WPrice ,Oprice=@Oprice ,UPrice=@UPrice ,UOM=@UOM ,Spec=@Spec ,Category=@Category ,ImageLink=@ImageLink ,UNSPSC=@UNSPSC where Productid=@Productid", sqlConnection);
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.Parameters.AddWithValue("@Category", (fastenal.Category == null) ? "" : ReplaceString.PutString(fastenal.Category));
+                    sqlCommand.Parameters.AddWithValue("@Title", (fastenal.Title == null) ? "" : ReplaceString.PutString(fastenal.Title));
+                    sqlCommand.Parameters.AddWithValue("@ManuPartNo", (fastenal.ManuPartNo == null) ? "" : ReplaceString.PutString(fastenal.ManuPartNo));
+                    sqlCommand.Parameters.AddWithValue("@ManuName", (fastenal.ManuName == null) ? "" : ReplaceString.PutString(fastenal.ManuName));
+                    sqlCommand.Parameters.AddWithValue("@FastePartNo", (fastenal.FastePartNo == null) ? "" : ReplaceString.PutString(fastenal.FastePartNo));
+                    sqlCommand.Parameters.AddWithValue("@WPrice", (fastenal.WPrice == null) ? "" : ReplaceString.PutString(fastenal.WPrice));
+                    sqlCommand.Parameters.AddWithValue("@Oprice", (fastenal.Oprice == null) ? "" : ReplaceString.PutString(fastenal.Oprice));
+                    sqlCommand.Parameters.AddWithValue("@UPrice", (fastenal.UPrice == null) ? "" : ReplaceString.PutString(fastenal.UPrice));
+                    sqlCommand.Parameters.AddWithValue("@UOM", (fastenal.UOM == null) ? "" : ReplaceString.PutString(fastenal.UOM));
+                    sqlCommand.Parameters.AddWithValue("@Spec", (fastenal.Spec == null) ? "" : ReplaceString.PutString(fastenal.Spec));
+                    sqlCommand.Parameters.AddWithValue("@ImageLink", (fastenal.ImageLink == null) ? "" : ReplaceString.PutString(fastenal.ImageLink));
+                    sqlCommand.Parameters.AddWithValue("@UNSPSC", (fastenal.UNSPSC == null) ? "" : ReplaceString.PutString(fastenal.UNSPSC));
+                    sqlCommand.Parameters.AddWithValue("@Productid", sourceid);
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("updateing product data failed!!");
+            }
+        }
+    }
+    public class fastenal
+    {
+        public string Title { get; set; }
+        public string ManuPartNo { get; set; }
+        public string ManuName { get; set; }
+        public string FastePartNo { get; set; }
+        public string WPrice { get; set; }
+        public string Oprice { get; set; }
+        public string UPrice { get; set; }
+        public string UOM { get; set; }
+        public string Spec { get; set; }
+        public string Category { get; set; }
+        public string ImageLink { get; set; }
+        public string UNSPSC { get; set; }
     }
 }

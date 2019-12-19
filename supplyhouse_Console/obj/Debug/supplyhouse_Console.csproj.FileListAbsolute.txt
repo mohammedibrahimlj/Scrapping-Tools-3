@@ -1,0 +1,10 @@
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\supplyhouse_Console.exe.config
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\supplyhouse_Console.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\supplyhouse_Console.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\HtmlAgilityPack.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\HtmlAgilityPack.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\HtmlAgilityPack.xml
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\obj\Debug\supplyhouse_Console.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\obj\Debug\supplyhouse_Console.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\bin\Debug\HTMLCodeReplacer.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\supplyhouse_Console\obj\Debug\supplyhouse_Console.csprojResolveAssemblyReference.cache

@@ -252,31 +252,42 @@ namespace Arrow.com
         }
         public static void DownloadString()
         {
+            int retryLoop = 1;
+            retry:
             try
             {
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
-                if (CookieCount == 100)
-                {
-                    GetCookie();
-                }
-                    CookieCount += 1;
+                
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                ServicePointManager.Expect100Continue = true;
+                //if (CookieCount == 100)
+                //{
+                //    GetCookie();
+                //}
+                CookieCount += 1;
                     DownloadedString = string.Empty;
-                    //ServicePointManager.UseNagleAlgorithm = false;
-                    //System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3;
-                    
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SourceLink);
-                //request.KeepAlive = true;
-                request.Headers.Set("cache-control", "no-cache");
-                request.Accept="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3";
-                request.Headers.Set("sec-fetch-user", "?1");
-                request.UserAgent= "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36";
-                request.Headers.Set("upgrade-insecure-requests", "1");
-                //request.Headers.Set(HttpRequestHeader.Cookie, CookieString);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    Stream responseStream = response.GetResponseStream();
-                    StreamReader streamReader = new StreamReader(responseStream, Encoding.UTF8);
-                    DownloadedString = streamReader.ReadToEnd();
+                //ServicePointManager.UseNagleAlgorithm = false;
+                //System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SourceLink);
+
+                request.KeepAlive = true;
+                request.Headers.Add("Upgrade-Insecure-Requests", @"1");
+                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36";
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3";
+                request.Headers.Set(HttpRequestHeader.CacheControl, "no-cache");
+                request.Headers.Add("X-Postman-Interceptor-Id", @"05ed533c-11e8-0324-3e8b-0420a4c3a283");
+                request.Headers.Add("Postman-Token", @"da51ad3c-1ebf-df26-a103-7a918c99fe57");
+                request.Headers.Add("sec-fetch-user", @"?1");
+                request.Headers.Add("Sec-Fetch-Site", @"cross-site");
+                request.Headers.Add("Sec-Fetch-Mode", @"cors");
+                request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
+                request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.9");
+                request.Headers.Set(HttpRequestHeader.Cookie, @"arrowcurrency=isocode=USD&culture=en-US; website#lang=en; _abck=F329300FE940841FB137780D8787D5A4~0~YAAQLUs5F4/rkdpuAQAAfkMw6QP+LAhWW/UnKQd5YQ4I3Qd8U707GbxuHp1jDVDvEBCasRkTU15hH2BQXHPSWBCU1TIsdDrq9UFZR9/n3mjX3bpWpjljzKcIB61+VSrVOKGA9cW2mCLVgeCUkW4uzpgtApChgaw6VLOp/gC0SryYziu0DdXyJ4Fe2a7YLKW+A6jHHxachzH4UCDMEYTx/5H78zyDlyx4WpbnHdjbe40oluo7WNhK2N276ZcNTs2HTn2AMIYjidbBnNYvxcTIpxgEQcnQ8BkMk3PLPjb/RfH1slXG+6o7JexhYsvX5vSgbIQ8G72r~-1~-1~-1; _gcl_au=1.1.511089453.1575904507; _ga=GA1.2.405967571.1575904507; _br_uid_2=uid%3D2939967513527%3Av%3D13.0%3Ats%3D1575904512401%3Ahc%3D1; kppid_managed=NFKcStUs; utag_main=v_id:016eeb3a899e006d218d2c50ab5803073001606b0086e$_sn:2$_ss:1$_st:1576004742907$ses_id:1576002942907%3Bexp-session$_pn:1%3Bexp-session; RT=""sl=1&ss=1576002938237&tt=26432&obo=0&sh=1576002964686%3D1%3A0%3A26432&dm=arrow.com&si=fa30c1be-098d-48dc-81d9-9d80665668d7&bcn=%2F%2F60062f08.akstat.io%2F&ld=1576002964687&r=https%3A%2F%2Fwww.arrow.com%2Fen%2Fproducts%2F2304889-1%2Fte-connectivity&ul=1576002964718&hd=1576002964745""; ASP.NET_SessionId=wjad43p0v2sdmncqdpb1ka0f; IsNewUser=True; AKA_A2=A; ak_bmsc=FA6372CE1F8744F2A9CDD90B9810EF6617CB3F37D77B0000C658F85DA415A512~plq+HSMAw8fZBP2VWwxmN1WaiWZnrOZSyEAsUgXbJBAS7j8k4pIDkJJCDh2fz4H6pXSRJoI433o9RWGX4Uq8m8re0gdKq9KF+mt+2tEPKj+vlv8D35IUz4EHI0jZCFqWz2LLEAvrCPwHj3WaAiIFfPJgc1tqu119bqvFz1EmV92ZQtr/st2nmeFiLOQJnUv/bfh3O7s/gVJ5LIH/gRhrhMUNT1ukK7KhV0x3lqrxhcCZKBIvmoRbgSgVofxepWg3mLZhjJcQJBka/KDSJElBIvL1KxyW7ZAhulrO6XFuZSwqRoro7FtvoHSfT6ZRtpAlap; bm_sz=021899B8837166490BA0559DFC3185CD~YAAQNz/LF2rZjN5uAQAAW8YaEgba01KEaLlTKgBsoC3rVYmdroT4KxrujlZYaTbtvWQj2fOLVK22MRHMf4bE1aFV/bJiGavIr8g/5oetz7vytppcEUJBm3IPF96UPxhgP0IjMcasw6/A7NQdHRAzAG6l7TD0qWv4Ff1wXxXJqmAvrHcN1QNKwQhQ0daj/YU=");
+                //Console.WriteLine("response");
+                DownloadedString = ReadResponse((HttpWebResponse)request.GetResponse());
+                //Console.WriteLine(respons.ToString());
+
+                //DownloadedString = streamReader.ReadToEnd();
                 
             }
             catch(WebException ex)
@@ -291,6 +302,12 @@ namespace Arrow.com
                     ArrowProduct = null;
                     GetCookie();
                     CookieCount = 1;
+                }
+                else
+                {
+                    retryLoop += 1;
+                    Console.WriteLine("Loop Retry "+ retryLoop);
+                   //goto retry;
                 }
             }
         }
@@ -310,7 +327,7 @@ namespace Arrow.com
                             sqlCommand = new SqlCommand("select searchid,SearchLink,TotalLink,processingpage,Searchquery from tbl_Arrow_searchLink where Iscompleted=0 and searchid between " + start + " and " + end + " ", sqlConnection);
                             break;
                         case 2:
-                            sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_Arrow_Product where isnull(category,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
+                            sqlCommand = new SqlCommand("select Productid,ProductLink from tbl_Arrow_Product where isnull(category,'')='' and isnull(itemtitle,'')='' and Productid  between " + start + " and " + end + " ", sqlConnection);
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;

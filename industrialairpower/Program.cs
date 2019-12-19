@@ -46,6 +46,7 @@ namespace industrialairpower
                         {
                             try
                             {
+                                ppage = 1;
                                 CookieCount = 0;
                                 ppcount = 0;
                                 SourceLink = string.Empty;
