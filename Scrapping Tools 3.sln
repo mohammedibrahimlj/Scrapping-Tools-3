@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29215.179
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arrow.com", "Arrow.com\Arrow.com.csproj", "{C109880C-6D34-43D6-A8FB-8CC1909097F0}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fastenal.com", "fastenal.com\fastenal.com.csproj", "{42E646D4-90F9-4008-A5C3-8A2B80556F2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "start_stop_process", "start_stop_process\start_stop_process.csproj", "{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "platt.com", "platt.com\platt.com.csproj", "{3E77D9DF-4CF8-4776-9507-37705F31A9C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,14 @@ Global
 		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|x86.ActiveCfg = Release|Any CPU
 		{D898F745-E503-43C8-BBFE-5BFFA58A6AFC}.Release|x86.Build.0 = Release|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Debug|x86.Build.0 = Debug|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|x86.ActiveCfg = Release|Any CPU
+		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
