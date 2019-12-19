@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\Arrow_CSEXWB.csproj": {}
+    "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\CSEXWBrowser.csproj": {}
   },
   "projects": {
-    "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\Arrow_CSEXWB.csproj": {
+    "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\CSEXWBrowser.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\Arrow_CSEXWB.csproj",
-        "projectName": "Arrow_CSEXWB",
-        "projectPath": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\Arrow_CSEXWB.csproj",
+        "projectUniqueName": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\CSEXWBrowser.csproj",
+        "projectName": "CSEXWBrowser",
+        "projectPath": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\CSEXWBrowser.csproj",
         "packagesPath": "C:\\Users\\Mohammed's\\.nuget\\packages\\",
         "outputPath": "F:\\Freelancer Code\\Scrapping Tools Code\\Scrapping-Tools-3\\Arrow_CSEXWB\\obj\\",
         "projectStyle": "PackageReference",

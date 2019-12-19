@@ -1,5 +1,5 @@
 ﻿using csExWB;
-namespace Arrow_CSEXWB
+namespace CSEXWBrowser
 {
     partial class Form1
     {
@@ -44,7 +44,7 @@ namespace Arrow_CSEXWB
             this.panel1.Controls.Add(this.cEXWB1);
             this.panel1.Location = new System.Drawing.Point(12, 64);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1059, 374);
+            this.panel1.Size = new System.Drawing.Size(1254, 606);
             this.panel1.TabIndex = 0;
             // 
             // cEXWB1
@@ -71,7 +71,7 @@ namespace Arrow_CSEXWB
             this.cEXWB1.ScrollBarsEnabled = true;
             this.cEXWB1.SendSourceOnDocumentCompleteWBEx = false;
             this.cEXWB1.Silent = false;
-            this.cEXWB1.Size = new System.Drawing.Size(1056, 368);
+            this.cEXWB1.Size = new System.Drawing.Size(1251, 603);
             this.cEXWB1.TabIndex = 0;
             this.cEXWB1.TextSize = IfacesEnumsStructsClasses.TextSizeWB.Medium;
             this.cEXWB1.UseInternalDownloadManager = true;
@@ -107,7 +107,7 @@ namespace Arrow_CSEXWB
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1105, 460);
+            this.ClientSize = new System.Drawing.Size(1278, 682);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Log);
             this.Controls.Add(this.panel1);
