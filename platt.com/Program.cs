@@ -23,6 +23,7 @@ namespace platt.com
         static HtmlDocument h1, h2, h3, h4, h5, h6;
         private static bool initial = false;
         private static readonly string Homeurl = "https://platt.com";
+        private static string filePath = "platt.txt";
         static void Main(string[] args)
         {
             SearchPageExtract();
@@ -96,7 +97,7 @@ namespace platt.com
                         Console.WriteLine("Total Link found " + links.Count());
                         foreach (var link in links)
                         {
-                            InsertProductLink(Homeurl + link);
+                            Log(Homeurl + link+"\n");
                         }
                         UpdatePageStatus(ppage, TotalPage);
                         ppage = ppage + 1;
@@ -225,6 +226,18 @@ namespace platt.com
                 Console.WriteLine("Error While loading search data!!! \n" + ex.ToString());
             }
             return dataSet;
+        }
+        public static void Log(string message)
+        {
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath);
+            }
+            using (StreamWriter streamWriter = File.AppendText(filePath))
+            {
+                streamWriter.WriteLine(message);
+                streamWriter.Close();
+            }
         }
     }
 }

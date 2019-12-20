@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "start_stop_process", "start
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "platt.com", "platt.com\platt.com.csproj", "{3E77D9DF-4CF8-4776-9507-37705F31A9C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "columbiapipe.com", "columbiapipe.com\columbiapipe.com.csproj", "{F945F60D-2324-4AF3-B02C-2A372895ACCC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,14 @@ Global
 		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{3E77D9DF-4CF8-4776-9507-37705F31A9C2}.Release|x86.Build.0 = Release|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Debug|x86.Build.0 = Debug|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Release|x86.ActiveCfg = Release|Any CPU
+		{F945F60D-2324-4AF3-B02C-2A372895ACCC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
