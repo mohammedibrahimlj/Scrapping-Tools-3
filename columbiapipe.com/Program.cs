@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HTMLCodeReplacer;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -25,9 +26,166 @@ namespace columbiapipe.com
         private static bool initial = false;
         private static readonly string Homeurl = "https://www.columbiapipe.com";
         private static string filePath = "columbiapipe.txt";
+        public static columbiapipe columbiapipe;
         static void Main(string[] args)
         {
-            SearchPageExtract();
+            //SearchPageExtract();
+            ProductExtract();
+        }
+        private static void ProductExtract()
+        {
+            try
+            {
+                Console.Title = Name;
+                while (true)
+                {
+                    DataSet data = GetData(2);
+                    if (data != null)
+                    {
+                        TotalCount = data.Tables[0].Rows.Count;
+                        num = 1;
+                        foreach (DataRow row in data.Tables[0].Rows)
+                        {
+                            try
+                            {
+                                sourceid = 0;
+                                SourceLink = string.Empty;
+                                searchquery = string.Empty;
+                                Console.WriteLine("Processing link " + num + " of " + TotalCount);
+                                SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
+                                //SourceLink = "https://www.columbiapipe.com/cutting-tool-oil/12399";
+                                sourceid = int.Parse(row.ItemArray[0].ToString());
+                                DownloadString();
+                                ProductParse();
+                                num++;
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+        private static void ProductParse()
+        {
+            columbiapipe = new columbiapipe();
+            try
+            {
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                try
+                {
+                    columbiapipe.ProTitle = h1.DocumentNode.SelectSingleNode("//h1[@class='pdp-title']").InnerText.ToString().Trim();
+                }
+                catch { columbiapipe.ProTitle = ""; }
+                try
+                {
+                    var breadcrumdata = h1.DocumentNode.SelectSingleNode("//ol[@class='breadcrumb']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(breadcrumdata);
+                    columbiapipe.Category = h2.DocumentNode.SelectNodes("//li").Select(s => s.InnerText.ToString().Trim()).Aggregate((a, b) => a + " | " + b).ToString().Trim();
+                }
+                catch { columbiapipe.Category = ""; }
+                try
+                {
+                    var htmldata = h1.DocumentNode.SelectSingleNode("//ul[@class='pdp-skus']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(htmldata);
+                    foreach (var data in h2.DocumentNode.SelectNodes("//li"))
+                    {
+                        if (data.InnerText.Contains("Mfr #:"))
+                        {
+                            columbiapipe.mfr = "#"+data.InnerText.Replace("Mfr #:", "").ToString().Trim();
+                        }
+                        else if (data.InnerText.Contains("Item #:"))
+                        {
+                            columbiapipe.item = "#" + data.InnerText.Replace("Item #:", "").ToString().Trim();
+                        }
+                        else if (data.InnerText.Contains("UPC:"))
+                        {
+                            columbiapipe.upc = "#" + data.InnerText.Replace("UPC:", "").ToString().Trim();
+                        }
+                        else if (data.InnerText.Contains("Brand:"))
+                        {
+                            columbiapipe.brand = data.InnerText.Replace("Brand:", "").ToString().Trim();
+                        }
+                        else if (data.InnerText.Contains("Min Order Qty:"))
+                        {
+                            columbiapipe.MOQ = "#" + data.InnerText.Replace("Min Order Qty:", "").ToString().Trim();
+                        }
+                        else if (data.InnerText.Contains("Qty Interval:"))
+                        {
+                            columbiapipe.QtyInter = "#" + data.InnerText.Replace("Qty Interval:", "").ToString().Trim();
+                        }
+                    }
+                }
+                catch { }
+                try
+                {
+                    var deschtml = h1.DocumentNode.SelectSingleNode("//div[@class='col-md-4 col-sm-6 col-xs-12 pdp-intro']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(deschtml);
+                    columbiapipe.LongDesc = h2.DocumentNode.SelectSingleNode("//p").InnerText.ToString().Trim();
+                }
+                catch { columbiapipe.LongDesc = ""; }
+                try
+                {
+                    columbiapipe.Price = h1.DocumentNode.SelectSingleNode("//div[@class='pdp-price text-center']").InnerText.ToString().Trim().Split('/')[0].ToString().Trim();
+                }
+                catch { columbiapipe.Price = ""; }
+                try
+                {
+                    columbiapipe.UOM = h1.DocumentNode.SelectSingleNode("//div[@class='pdp-price text-center']").InnerText.ToString().Trim().Split('/')[1].ToString().Trim();
+                }
+                catch { columbiapipe.UOM = ""; }
+                try
+                {
+                    columbiapipe.Feature = h1.DocumentNode.SelectSingleNode("//div[@id='featuresSectionDetailsDiv']").InnerText.ToString().Trim().Replace("\n"," ");
+                }
+                catch { columbiapipe.Feature = ""; }
+                try
+                {
+                    var tabledata = h1.DocumentNode.SelectSingleNode("//table[@class='table table-pdp table-mobile table-pdp-specs word-wrapping']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(tabledata);
+                    foreach (var tr in h2.DocumentNode.SelectNodes("//tr"))
+                    {
+                        h3 = null;
+                        h3 = new HtmlDocument();
+                        h3.LoadHtml(tr.InnerHtml.ToString());
+                        var td = h3.DocumentNode.SelectNodes("//td");
+                        columbiapipe.Spec += td[0].InnerText.ToString().Trim() + " : " + td[1].InnerText.ToString().Trim() + " | ";
+
+                    }
+                }
+                catch { }
+                try
+                {
+                    var imgdiv = h1.DocumentNode.SelectSingleNode("//div[@class='pdp-gallery-thumbs row row-narrow']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(imgdiv);
+                    columbiapipe.img_Link = h2.DocumentNode.SelectNodes("//img").Select(s => s.Attributes["data-src"].Value.ToString()).Aggregate((a, b) => a + " | " + b).ToString().Trim();
+                }
+                catch { }
+            }
+            catch { }
+            finally {
+                InsertProduct();
+                h1 = null;
+                h2 = null;
+                h3 = null;
+                h4 = null;
+                DownloadedString = string.Empty;
+                columbiapipe = null;
+            }
         }
         private static void SearchPageExtract()
         {
@@ -136,7 +294,7 @@ namespace columbiapipe.com
                                 h2 = null;
                                 h2 = new HtmlDocument();
                                 h2.LoadHtml(link.InnerHtml.ToString());
-                                Log(Homeurl + h2.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value.ToString());
+                                //Log(Homeurl + h2.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value.ToString());
                                // InsertProductLink(Homeurl + h2.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value.ToString());
                             }
                             UpdatePageStatus(ppage, TotalPage);
@@ -237,7 +395,8 @@ namespace columbiapipe.com
                             sqlCommand = new SqlCommand("select searchid,Searchurl,Processing_Page from tbl_columbiapipe_search where isnull(iscompleted,'')=0 order by searchid", sqlConnection);
                             break;
                         case 2:
-                            sqlCommand = new SqlCommand("select ProductId,ProductURL from tbl_columbiapipe_product where ProductId  between " + start + " and " + end + " and  isnull(Category,'')=''", sqlConnection);
+                            sqlCommand = new SqlCommand("select productid,productlink from tbl_columbiapipe_product where ProductId  between " + start + " and " + end + " and  isnull(Category,'')='' ", sqlConnection);
+                                //
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;
@@ -251,6 +410,60 @@ namespace columbiapipe.com
             }
             return dataSet;
         }
+        private static void InsertProduct()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+                        cmd.CommandText = "update tbl_columbiapipe_product set Category=@Category,ProTitle=@ProTitle,mfr=@mfr,item=@item,upc=@upc,brand=@brand,MOQ=@MOQ,QtyInter=@QtyInter,LongDesc=@LongDesc,Price=@Price,UOM=@UOM,Feature=@Feature,Spec=@Spec,img_Link=@img_Link where productid=@sourceid";
+                        cmd.Parameters.AddWithValue(@"Category", columbiapipe.Category != null ? ReplaceString.PutString(columbiapipe.Category) : "");
+                        cmd.Parameters.AddWithValue(@"ProTitle", columbiapipe.ProTitle != null ? ReplaceString.PutString(columbiapipe.ProTitle) : "");
+                        cmd.Parameters.AddWithValue(@"mfr", columbiapipe.mfr != null ? ReplaceString.PutString(columbiapipe.mfr) : "");
+                        cmd.Parameters.AddWithValue(@"item", columbiapipe.item != null ? ReplaceString.PutString(columbiapipe.item) : "");
+                        cmd.Parameters.AddWithValue(@"upc", columbiapipe.upc != null ? ReplaceString.PutString(columbiapipe.upc) : "");
+                        cmd.Parameters.AddWithValue(@"brand", columbiapipe.brand != null ? ReplaceString.PutString(columbiapipe.brand) : "");
+                        cmd.Parameters.AddWithValue(@"MOQ", columbiapipe.MOQ != null ? ReplaceString.PutString(columbiapipe.MOQ) : "");
+                        cmd.Parameters.AddWithValue(@"QtyInter", columbiapipe.QtyInter != null ? ReplaceString.PutString(columbiapipe.QtyInter) : "");
+                        cmd.Parameters.AddWithValue(@"LongDesc", columbiapipe.LongDesc != null ? ReplaceString.PutString(columbiapipe.LongDesc) : "");
+                        cmd.Parameters.AddWithValue(@"Price", columbiapipe.Price != null ? ReplaceString.PutString(columbiapipe.Price) : "");
+                        cmd.Parameters.AddWithValue(@"UOM", columbiapipe.UOM != null ? ReplaceString.PutString(columbiapipe.UOM) : "");
+                        cmd.Parameters.AddWithValue(@"Feature", columbiapipe.Feature != null ? ReplaceString.PutString(columbiapipe.Feature) : "");
+                        cmd.Parameters.AddWithValue(@"Spec", columbiapipe.Spec != null ? ReplaceString.PutString(columbiapipe.Spec) : "");
+                        cmd.Parameters.AddWithValue(@"img_Link", columbiapipe.img_Link != null ? ReplaceString.PutString(columbiapipe.img_Link) : "");
+
+                        cmd.Parameters.AddWithValue("@sourceid", sourceid);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error While Updating the Product");
+            }
+        }
+    }
+    public class columbiapipe
+    {
+        public string Category { get; set; }
+        public string ProTitle { get; set; }
+        public string mfr { get; set; }
+        public string item { get; set; }
+        public string upc { get; set; }
+        public string brand { get; set; }
+        public string MOQ { get; set; }
+        public string QtyInter { get; set; }
+        public string LongDesc { get; set; }
+        public string Price { get; set; }
+        public string UOM { get; set; }
+        public string Feature { get; set; }
+        public string Spec { get; set; }
+        public string img_Link { get; set; }
 
     }
 }

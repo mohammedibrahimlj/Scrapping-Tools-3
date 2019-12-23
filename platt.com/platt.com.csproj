@@ -36,6 +36,9 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\turtle\bin\Debug\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="HTMLCodeReplacer">
+      <HintPath>..\industrialairpower\bin\Debug\HTMLCodeReplacer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
