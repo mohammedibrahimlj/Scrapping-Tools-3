@@ -259,10 +259,10 @@ namespace Arrow.com
                 
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 ServicePointManager.Expect100Continue = true;
-                //if (CookieCount == 100)
-                //{
-                //    GetCookie();
-                //}
+                if (CookieCount == 100)
+                {
+                    GetCookie();
+                }
                 CookieCount += 1;
                     DownloadedString = string.Empty;
                 //ServicePointManager.UseNagleAlgorithm = false;
@@ -282,7 +282,10 @@ namespace Arrow.com
                 request.Headers.Add("Sec-Fetch-Mode", @"cors");
                 request.Headers.Set(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
                 request.Headers.Set(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.9");
-                request.Headers.Set(HttpRequestHeader.Cookie, @"arrowcurrency=isocode=USD&culture=en-US; website#lang=en; _abck=F329300FE940841FB137780D8787D5A4~0~YAAQLUs5F4/rkdpuAQAAfkMw6QP+LAhWW/UnKQd5YQ4I3Qd8U707GbxuHp1jDVDvEBCasRkTU15hH2BQXHPSWBCU1TIsdDrq9UFZR9/n3mjX3bpWpjljzKcIB61+VSrVOKGA9cW2mCLVgeCUkW4uzpgtApChgaw6VLOp/gC0SryYziu0DdXyJ4Fe2a7YLKW+A6jHHxachzH4UCDMEYTx/5H78zyDlyx4WpbnHdjbe40oluo7WNhK2N276ZcNTs2HTn2AMIYjidbBnNYvxcTIpxgEQcnQ8BkMk3PLPjb/RfH1slXG+6o7JexhYsvX5vSgbIQ8G72r~-1~-1~-1; _gcl_au=1.1.511089453.1575904507; _ga=GA1.2.405967571.1575904507; _br_uid_2=uid%3D2939967513527%3Av%3D13.0%3Ats%3D1575904512401%3Ahc%3D1; kppid_managed=NFKcStUs; utag_main=v_id:016eeb3a899e006d218d2c50ab5803073001606b0086e$_sn:2$_ss:1$_st:1576004742907$ses_id:1576002942907%3Bexp-session$_pn:1%3Bexp-session; RT=""sl=1&ss=1576002938237&tt=26432&obo=0&sh=1576002964686%3D1%3A0%3A26432&dm=arrow.com&si=fa30c1be-098d-48dc-81d9-9d80665668d7&bcn=%2F%2F60062f08.akstat.io%2F&ld=1576002964687&r=https%3A%2F%2Fwww.arrow.com%2Fen%2Fproducts%2F2304889-1%2Fte-connectivity&ul=1576002964718&hd=1576002964745""; ASP.NET_SessionId=wjad43p0v2sdmncqdpb1ka0f; IsNewUser=True; AKA_A2=A; ak_bmsc=FA6372CE1F8744F2A9CDD90B9810EF6617CB3F37D77B0000C658F85DA415A512~plq+HSMAw8fZBP2VWwxmN1WaiWZnrOZSyEAsUgXbJBAS7j8k4pIDkJJCDh2fz4H6pXSRJoI433o9RWGX4Uq8m8re0gdKq9KF+mt+2tEPKj+vlv8D35IUz4EHI0jZCFqWz2LLEAvrCPwHj3WaAiIFfPJgc1tqu119bqvFz1EmV92ZQtr/st2nmeFiLOQJnUv/bfh3O7s/gVJ5LIH/gRhrhMUNT1ukK7KhV0x3lqrxhcCZKBIvmoRbgSgVofxepWg3mLZhjJcQJBka/KDSJElBIvL1KxyW7ZAhulrO6XFuZSwqRoro7FtvoHSfT6ZRtpAlap; bm_sz=021899B8837166490BA0559DFC3185CD~YAAQNz/LF2rZjN5uAQAAW8YaEgba01KEaLlTKgBsoC3rVYmdroT4KxrujlZYaTbtvWQj2fOLVK22MRHMf4bE1aFV/bJiGavIr8g/5oetz7vytppcEUJBm3IPF96UPxhgP0IjMcasw6/A7NQdHRAzAG6l7TD0qWv4Ff1wXxXJqmAvrHcN1QNKwQhQ0daj/YU=");
+                request.Timeout = 5000;
+                request.Headers.Set(HttpRequestHeader.Cookie, CookieString);
+                //request.Headers.Set(HttpRequestHeader.Cookie, @"ASP.NET_SessionId=nxh2wlglhg0vuzjzophrlyew; arrowcurrency=isocode=USD&culture=en-US; website#lang=en; bm_sz=4E634B357439EF9A393CE9989A8DF093~YAAQmUgRYCgBaS5vAQAAF/svNgaamlwwhnWCmSnGpBmH430JJuHFb+LH4RJyJanwK8D3/YXY4OMVk4dybyo06Ar3M9blRnbYQ1DOMOKhzhsc3jJhRgyDTENTLipBL/5FP/D2X1Q1En8Q9RTscEjP/sNbMOOJHTJYOhaMMq/dvLKdqCF6Vy4WjU+AHLYXeLU=; _gcl_au=1.1.1794065317.1577192752; RedirectFromLogin=0; _abck=0E0C90C0FFE076DF345DC25FA80EABDD~0~YAAQmUgRYC4BaS5vAQAAJAAwNgM6DdLCI/rmnOLKLjdFgYkbu8G/yWKKgu85DftDu9W6i3G37ahH9YJNp/TgFjGP6dkJjnLle8RrO49wEB5u+DBkCTEO0x5V4KBOwh8t73eDZ8TAUQSwPr3BIwovKe9s7COHXp3rpvSm1dUHIkigguMLdWgp9kiTTWWES2GRPeJxwqwQyNE/bxL4HPDDlS1WYaFndJed0NHE+j+SoqjSRCGZRiarPmeaMAiV2PUYinVcN2XB4NE1kpaDi6PQKxOXXK3WyfAWnJ9Wr1ngpqRFpPYiFG1+kZ706qxt36VAcrDGR/zV~-1~-1~-1; _ga=GA1.2.221525952.1577192753; _gid=GA1.2.1553639270.1577192753; _dc_gtm_UA-29564268-22=1; ak_bmsc=B3A574E0AA62640F6116F5D390259A0F60114899F12700007F95015EA98C6D6D~pltYVYfNt45AoQBy6N7zEkEZw45kYBOgMG11IJNJleeAUtN0XZS6aMWtrlJuF/hEHXlt5O1mrYgypEnuKA3TnfxGyZ/zULMk1XecnSy2UoVlHSJ6JmEUXWZQY4HzYrGylqcSXCSfbbeEvOqD21QhhUEnK7Mv7dqe74gxjZjDpT+23irE9XtS+hW6KgVJfGnVtWbw4bDPSWGhdEeTXJ15uhW80d/Z5gOuAftwT4AYxzqZ1UbQs4VItzPDuKlOHIKpOZNBE0HsPAPnILfA9z/p0RoRstWsQ79x/8Fjb9YeiIfBhHRllZdzeD09lIoYWKyU2/hEBRw2Dbp2bSorwfoQE6og==; _gat_UA-29564268-22=1; IsNewUser=False; _br_uid_2=uid%3D9799714168150%3Av%3D13.0%3Ats%3D1577192758750%3Ahc%3D1; utag_main=v_id:016f38039df00017fd5923b4530e03072003a06a0086e$_sn:1$_ss:1$_st:1577194558770$ses_id:1577192758770%3Bexp-session$_pn:1%3Bexp-session; kppid_managed=NH7Q8MTi; RT=""sl=2&ss=1577192751563&tt=2304&obo=1&bcn=%2F%2F684fc53f.akstat.io%2F&sh=1577192759228%3D2%3A1%3A2304%2C1577192755328%3D1%3A1%3A0&dm=arrow.com&si=3c92c004-5fbc-44b0-9771-933a6e04e33a&r=https%3A%2F%2Fwww.arrow.com%2Fen%2Fproducts%2Fbps130-ha030p-1mg%2Fbourns&ul=1577192767558""");
+
                 //Console.WriteLine("response");
                 DownloadedString = ReadResponse((HttpWebResponse)request.GetResponse());
                 //Console.WriteLine(respons.ToString());
@@ -531,7 +534,7 @@ namespace Arrow.com
                 using (SqlConnection sqlConnection = new SqlConnection(connection))
                 {
                     sqlConnection.Open();
-                    SqlCommand sqlCommand = new SqlCommand("update [dbo].[tbl_Arrow_Product] set itemtitle=@itemtitle,Productdescription=@Productdescription,MPN=@MPN,Manufacturename=@Manufacturename,productcategory=@productcategory,UOM=@UOM,price=@price,imageurl=@imageurl,category=@category,techspec=@techspec where Productid=@id", sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand("update [dbo].[tbl_Arrow_Product] set itemtitle=@itemtitle,Productdescription=@Productdescription,MPN=@MPN,Manufacturename=@Manufacturename,productcategory=@productcategory,UOM=@UOM,price=@price,imageurl=@imageurl,category=@category,techspec=@techspec ,ModifiedDate=@ModifiedDate where Productid=@id", sqlConnection);
                     sqlCommand.CommandType = CommandType.Text;
                     sqlCommand.Parameters.AddWithValue("@itemtitle", (ArrowProduct.itemtitle == null) ? "" : ArrowProduct.itemtitle);
                     sqlCommand.Parameters.AddWithValue("@Productdescription", (ArrowProduct.Productdescription == null) ? "" : ArrowProduct.Productdescription);
@@ -545,6 +548,7 @@ namespace Arrow.com
                     sqlCommand.Parameters.AddWithValue("@techspec", (ArrowProduct.techspec == null) ? "" : ArrowProduct.techspec);
                     //sqlCommand.Parameters.AddWithValue("@ProductURL", SourceLink);
                     sqlCommand.Parameters.AddWithValue("@id", sourceid);
+                    sqlCommand.Parameters.AddWithValue("@ModifiedDate", DateTime.Now);
                     sqlCommand.ExecuteNonQuery();
                 }
             }
