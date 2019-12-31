@@ -38,41 +38,46 @@ namespace platt.com
                 Console.Title = Name;
                 while (true)
                 {
-                    //initial = true;
-                    DataSet data = GetData(1);
-                    if (data != null)
+                    try
                     {
-                        TotalCount = data.Tables[0].Rows.Count;
-                        num = 1;
-                        //GetCookie();
-                        foreach (DataRow row in data.Tables[0].Rows)
+                        //initial = true;
+                        DataSet data = GetData(1);
+                        if (data != null)
                         {
-                            try
+                            TotalCount = data.Tables[0].Rows.Count;
+                            num = 1;
+                            //GetCookie();
+                            foreach (DataRow row in data.Tables[0].Rows)
                             {
-                                TotalPage = 0;
-                                initial = true;
-                                ppage = 1;
-                                CookieCount = 0;
-                                ppcount = 0;
-                                SourceLink = string.Empty;
-                                searchquery = string.Empty;
-                                Console.WriteLine("Processing link " + num + " of " + TotalCount);
-                                sourceid = 0;
-                                modifiedlink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
-                                ppage = int.Parse(row.ItemArray[2].ToString()) != 0 ? int.Parse(row.ItemArray[2].ToString()) : 1;
-                                SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim()+ navigate.Replace("xpgnox", ppage.ToString());
+                                try
+                                {
+                                    TotalPage = 0;
+                                    initial = true;
+                                    ppage = 1;
+                                    CookieCount = 0;
+                                    ppcount = 0;
+                                    SourceLink = string.Empty;
+                                    searchquery = string.Empty;
+                                    Console.WriteLine("Processing link " + num + " of " + TotalCount);
+                                    sourceid = 0;
+                                    modifiedlink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
+                                    ppage = int.Parse(row.ItemArray[2].ToString()) != 0 ? int.Parse(row.ItemArray[2].ToString()) : 1;
+                                    SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim() + navigate.Replace("xpgnox", ppage.ToString());
 
-                                sourceid = int.Parse(row.ItemArray[0].ToString());
-                                DownloadString();
-                                GetSearchLinkInitial();
-                                num++;
-                            }
-                            catch
-                            {
+                                    sourceid = int.Parse(row.ItemArray[0].ToString());
+                                    DownloadString();
+                                    GetSearchLinkInitial();
+                                    num++;
+                                }
+                                catch
+                                {
+                                }
                             }
                         }
                     }
-                }
+                    catch { }
+                    }
+               
             }
             catch { }
         }

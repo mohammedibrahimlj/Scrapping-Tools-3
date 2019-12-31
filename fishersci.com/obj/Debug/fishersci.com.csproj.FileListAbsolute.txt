@@ -1,0 +1,9 @@
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\bin\Debug\fishersci.com.exe.config
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\bin\Debug\fishersci.com.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\bin\Debug\fishersci.com.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\bin\Debug\HtmlAgilityPack.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\bin\Debug\HtmlAgilityPack.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\bin\Debug\HtmlAgilityPack.xml
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\obj\Debug\fishersci.com.csprojResolveAssemblyReference.cache
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\obj\Debug\fishersci.com.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\fishersci.com\obj\Debug\fishersci.com.pdb
