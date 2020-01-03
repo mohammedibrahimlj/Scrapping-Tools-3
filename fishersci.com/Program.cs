@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using HTMLCodeReplacer;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,13 +19,14 @@ namespace fishersci.com
         private static readonly string Name = ConfigurationManager.AppSettings["Name"].ToString();
         private static readonly int start = int.Parse(ConfigurationManager.AppSettings["Start"].ToString());
         private static readonly int end = int.Parse(ConfigurationManager.AppSettings["End"].ToString());
-        private static int sourceid, ppage, TotalPage, num = 0, ppcount = 0, TotalCount = 0, CookieCount = 0;
+        private static int sourceid, ppage, TotalPage, num = 0, ppcount = 0, TotalCount = 0, CookieCount = 0, IsLink=0;
         private static string SourceLink, modifiedlink, Looplink = string.Empty, CookieString = string.Empty, searchquery = string.Empty, Scode = string.Empty, DownloadedString = string.Empty;
         static HtmlDocument h1, h2, h3, h4, h5, h6;
         private static bool initial = false;
-        private static readonly string Homeurl = "https://www.fishersci.com/";
+        private static readonly string Homeurl = "https://www.fishersci.com";
         private static string filePath = "columbiapipe.txt";
-       // public static columbiapipe columbiapipe;
+        public static fishersci fishersci;
+        // public static columbiapipe columbiapipe;
         static void Main(string[] args)
         {
             SearchPageExtract();
@@ -36,7 +38,7 @@ namespace fishersci.com
                 Console.Title = Name;
                 while (true)
                 {
-                    DataSet data = GetData(1);
+                    DataSet data = GetData(2);
                     if (data != null)
                     {
                         TotalCount = data.Tables[0].Rows.Count;
@@ -45,6 +47,7 @@ namespace fishersci.com
                         {
                             try
                             {
+                                IsLink = 0;
                                 TotalPage = 0;
                                 initial = true;
                                 ppage = 1;
@@ -54,13 +57,15 @@ namespace fishersci.com
                                 searchquery = string.Empty;
                                 Console.WriteLine("Processing link " + num + " of " + TotalCount);
                                 sourceid = 0;
-                                modifiedlink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
-                                ppage = int.Parse(row.ItemArray[2].ToString()) != 0 ? (int.Parse(row.ItemArray[2].ToString()) + 1) : 1;
-                                SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim() + navigate.Replace("xpgnox", ppage.ToString());
+                                SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim();
+                                IsLink = int.Parse(row.ItemArray[2].ToString());
+                                //ppage = int.Parse(row.ItemArray[2].ToString()) != 0 ? (int.Parse(row.ItemArray[2].ToString()) + 1) : 1;
+                                //SourceLink = row.ItemArray[1].ToString().Split('\t')[0].Trim() + navigate.Replace("xpgnox", ppage.ToString());
 
                                 sourceid = int.Parse(row.ItemArray[0].ToString());
                                 DownloadString();
-                                GetSearchLinkInitial();
+                                ProductExtract();
+                                //GetSearchLinkInitial();
                                 num++;
                             }
                             catch
@@ -71,6 +76,174 @@ namespace fishersci.com
                 }
             }
             catch { }
+        }
+        private static void ProductExtract()
+        {
+            fishersci = new fishersci();
+            try
+            {
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                try
+                {
+                    var breadcrum = h1.DocumentNode.SelectSingleNode("//div[@class='breadcrumbs']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(breadcrum);
+                    foreach (var li in h2.DocumentNode.SelectNodes("//li"))
+                    {
+                        fishersci.category += li.InnerText.Trim() + " | ";
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    fishersci.Title = h1.DocumentNode.SelectSingleNode("//h1[@id='item_header_text']").InnerText.ToString().Replace("\n","").Replace("&nbsp;", "").Trim();
+                }
+                catch { fishersci.Title = ""; }
+                try
+                {
+                    fishersci.Short_desc = h1.DocumentNode.SelectSingleNode("//div[@class='subhead']").InnerText.ToString().Replace("\n", "").Replace("&nbsp;", "").Trim();
+                }
+                catch { fishersci.Short_desc = ""; }
+
+                try
+                {
+                    fishersci.Feature = h1.DocumentNode.SelectSingleNode("//div[@id='tab1']").InnerText.ToString().Replace("\n", "").Replace("&nbsp;", "").Trim();
+                }
+                catch { fishersci.Feature = ""; }
+                try
+                {
+                    fishersci.MFR_Num = "#"+h1.DocumentNode.SelectSingleNode("//input[@name='partNum']").Attributes["value"].Value.ToString();
+                }
+                catch { fishersci.MFR_Num = ""; }
+
+                try
+                {
+                    var manudata = h1.DocumentNode.SelectSingleNode("//p[@id='qa_mfr_comp_label']");
+                    try
+                    {
+                        fishersci.Manu_Name = manudata.InnerText.Replace("Manufacturer:", "").ToString().Replace(fishersci.MFR_Num, "").Replace("\n", "").Replace("&nbsp;", "").Trim();
+                    }
+                    catch { }
+
+                    try
+                    {
+                        h2 = null;
+                        h2 = new HtmlDocument();
+                        h2.LoadHtml(manudata.InnerHtml.ToString());
+                        fishersci.SDP = h2.DocumentNode.SelectSingleNode("//img").Attributes["title"].Value.ToString();
+                    }
+                    catch { fishersci.SDP = ""; }
+                }
+                catch {  }
+                try
+                {
+                    fishersci.Categlog = "#"+h1.DocumentNode.SelectSingleNode("//span[@id='qa_prod_code_labl']").InnerText.ToString().Replace("\n", "").Replace("&nbsp;", "").Trim();
+                }
+                catch { fishersci.Categlog = ""; }
+                try
+                {
+                    fishersci.Price = h1.DocumentNode.SelectSingleNode("//span[@itemprop='price']").Attributes["content"].Value.ToString().Trim();
+                }
+                catch { fishersci.Price = ""; }
+                try
+                {
+                    fishersci.UOM = h1.DocumentNode.SelectSingleNode("//span[@itemprop='unitText']").Attributes["content"].Value.ToString().Replace(" / ","").Replace("\n", "").Replace("&nbsp;", "").Trim();
+                }
+                catch { fishersci.UOM = ""; }
+                try
+                {
+                    var specdata = h1.DocumentNode.SelectSingleNode("//div[@id='tab2']").InnerHtml.ToString();
+                    h2 = null;
+                    h2 = new HtmlDocument();
+                    h2.LoadHtml(specdata);
+                    foreach (var tr in h2.DocumentNode.SelectNodes("//tr"))
+                    {
+                        try
+                        {
+                            h3 = null;
+                            h3 = new HtmlDocument();
+                            h3.LoadHtml(tr.InnerHtml.ToString());
+                            var spec = h3.DocumentNode.SelectNodes("//td");
+                            fishersci.Specfication += spec[0].InnerText.ToString().Trim() + " : " + spec[1].InnerText.ToString().Trim();
+                        }
+                        catch { }
+                    }
+                }
+                catch { }
+                try
+                {
+                    try
+                    {
+                        var imgdata = h1.DocumentNode.SelectSingleNode("//ul[@class='csPager cSGallery']").InnerHtml.ToString();
+                        h2 = null;
+                        h2 = new HtmlDocument();
+                        h2.LoadHtml(imgdata);
+                        foreach (var imglink in h2.DocumentNode.SelectNodes("//img"))
+                        {
+                            fishersci.Image_Link += imglink.Attributes["src"].Value.ToString() + " | ";
+                        }
+                    }
+                    catch { }
+                    try
+                    {
+                        fishersci.Image_Link += h1.DocumentNode.SelectSingleNode("//img[@id='productImage']").Attributes["src"].Value.ToString();
+                    }
+                    catch { }
+                }
+                catch { fishersci.Image_Link = ""; }
+            }
+            catch {
+                Console.WriteLine("Error While Processing the HTML data....");
+            }
+            finally {
+                UpdateProductData();
+                if (IsLink == 0)
+                {
+                    ProductLinkCheck();
+                }
+                
+                fishersci = null;
+                h1 = null;
+                h2 = null;
+                h3 = null;
+            }
+        }
+
+        public static void UpdateProductData()
+        {
+            try
+            {
+                Console.WriteLine("Update product data !!");
+                using (SqlConnection sqlConnection = new SqlConnection(connection))
+                {
+                    sqlConnection.Open();
+                    SqlCommand sqlCommand = new SqlCommand("update [dbo].[tbl_fishersci_product] set Image_Link=@Image_Link,Specfication=@Specfication,UOM=@UOM,Price=@Price,SDP=@SDP,Categlog=@Categlog,MFR_Num=@MFR_Num,Manu_Name=@Manu_Name,Feature=@Feature,Short_desc=@Short_desc,Title=@Title,category=@category,IsLink=@IsLink where Productid =@Productid", sqlConnection);
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.Parameters.AddWithValue("@category", (fishersci.category == null) ? "" : ReplaceString.PutString(fishersci.category));
+                    sqlCommand.Parameters.AddWithValue("@Title", (fishersci.Title == null) ? "" : ReplaceString.PutString(fishersci.Title));
+                    sqlCommand.Parameters.AddWithValue("@Short_desc", (fishersci.Short_desc == null) ? "" : ReplaceString.PutString(fishersci.Short_desc));
+                    sqlCommand.Parameters.AddWithValue("@Feature", (fishersci.Feature == null) ? "" : ReplaceString.PutString(fishersci.Feature));
+                    sqlCommand.Parameters.AddWithValue("@Manu_Name", (fishersci.Manu_Name == null) ? "" : ReplaceString.PutString(fishersci.Manu_Name));
+                    sqlCommand.Parameters.AddWithValue("@MFR_Num", (fishersci.MFR_Num == null) ? "" : ReplaceString.PutString(fishersci.MFR_Num));
+                    sqlCommand.Parameters.AddWithValue("@Categlog", (fishersci.Categlog == null) ? "" : ReplaceString.PutString(fishersci.Categlog));
+                    sqlCommand.Parameters.AddWithValue("@SDP", (fishersci.SDP == null) ? "" : ReplaceString.PutString(fishersci.SDP));
+                    sqlCommand.Parameters.AddWithValue("@Price", (fishersci.Price == null) ? "" : ReplaceString.PutString(fishersci.Price));
+                    sqlCommand.Parameters.AddWithValue("@UOM", (fishersci.UOM == null) ? "" : ReplaceString.PutString(fishersci.UOM));
+                    sqlCommand.Parameters.AddWithValue("@Specfication", (fishersci.Specfication == null) ? "" : ReplaceString.PutString(fishersci.Specfication));
+                    sqlCommand.Parameters.AddWithValue("@Image_Link", (fishersci.Image_Link == null) ? "" : ReplaceString.PutString(fishersci.Image_Link));
+                    sqlCommand.Parameters.AddWithValue("@IsLink", 1);
+                    sqlCommand.Parameters.AddWithValue("@Productid", sourceid);
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("updateing product data failed!!");
+            }
         }
 
         public static DataSet GetData(int option = 1)
@@ -88,8 +261,7 @@ namespace fishersci.com
                             sqlCommand = new SqlCommand("select searchid,Searchurl,Processing_Page from tbl_fishersci_search where isnull(iscompleted,'')=2 order by searchid", sqlConnection);
                             break;
                         case 2:
-                            sqlCommand = new SqlCommand("select productid,productlink from tbl_columbiapipe_product where ProductId  between " + start + " and " + end + " and  isnull(Category,'')='' ", sqlConnection);
-                            //
+                            sqlCommand = new SqlCommand("select productid,productlink,IsLink from tbl_fishersci_product where productid  between " + start + " and " + end + " and  isnull(Category,'')=''", sqlConnection);
                             break;
                     }
                     sqlCommand.CommandTimeout = 6000;
@@ -187,9 +359,10 @@ namespace fishersci.com
                 using (SqlConnection con = new SqlConnection(connection))
                 {
                     con.Open();
-                    SqlCommand cmd = new SqlCommand("insert into tbl_fishersci_search (Searchurl)"
-                        + "values(@Productlink)", con);
+                    SqlCommand cmd = new SqlCommand("insert into tbl_fishersci_product (productlink,IsLink)"
+                        + "values(@Productlink,@IsLink)", con);
                     cmd.Parameters.AddWithValue("@Productlink", Productlink.Trim());
+                    cmd.Parameters.AddWithValue("@IsLink", 1);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -199,6 +372,20 @@ namespace fishersci.com
             }
         }
 
+        private static void ProductLinkCheck()
+        {
+            try
+            {
+                h1 = null;
+                h1 = new HtmlDocument();
+                h1.LoadHtml(DownloadedString);
+                foreach (var plink in h1.DocumentNode.SelectNodes("//a[@class='chemical_fmly_glyph']"))
+                {
+                    InsertProductLink(Homeurl + plink.Attributes["href"].Value.ToString());
+                }
+            }
+            catch { }
+        }
         private static void UpdateStatus(int completed)
         {
             try
@@ -218,5 +405,21 @@ namespace fishersci.com
                 Console.WriteLine("Error while updating status");
             }
         }
+    }
+    public class fishersci
+    {
+        public string category { get; set; }
+        public string Title { get; set; }
+        public string Short_desc { get; set; }
+        public string Feature { get; set; }
+        public string Manu_Name { get; set; }
+        public string MFR_Num { get; set; }
+        public string Categlog { get; set; }
+        public string SDP { get; set; }
+        public string Price { get; set; }
+        public string UOM { get; set; }
+        public string Specfication { get; set; }
+        public string Image_Link { get; set; }
+
     }
 }
