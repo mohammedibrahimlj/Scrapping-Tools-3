@@ -10,3 +10,14 @@ C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\turt
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\turtle\obj\Debug\turtle.csprojResolveAssemblyReference.cache
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\turtle\obj\Debug\turtle.exe
 C:\Users\mohammed.l\Documents\Visual Studio 2015\Projects\Scrapping Tools 3\turtle\obj\Debug\turtle.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\turtle.exe.config
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\turtle.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\turtle.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\HTMLCodeReplacer.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\Newtonsoft.Json.dll
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\HtmlAgilityPack.pdb
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\HtmlAgilityPack.xml
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\bin\Debug\Newtonsoft.Json.xml
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\obj\Debug\turtle.csprojResolveAssemblyReference.cache
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\obj\Debug\turtle.exe
+C:\MohammedIbrahim\Mycode\Scrapping Tools 3\turtle\obj\Debug\turtle.pdb
